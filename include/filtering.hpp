@@ -1,0 +1,54 @@
+#pragma once
+
+#include "type_traits.hpp"
+#include "base_reducing_function.hpp"
+
+namespace transducers {
+
+    namespace details {
+        template<typename FilteringFunction, typename _Rf>
+        class FilterReductionFunction : public toolbox::base_reducing_function<_Rf>
+        {
+        public:
+            FilteringFunction f;
+
+            FilterReductionFunction(FilteringFunction const & f, _Rf&& rf) : f(f), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
+
+            template<typename Reduction, typename Input, typename _EsHa>
+            stored_argument_t<Reduction> step(Reduction&& r, Input&& i, _EsHa & reduced)
+            {
+                static_assert(std::is_convertible<decltype(f(i)), bool>::value, "f(i) must produce a type convertible to bool in filtering transducers.");
+
+                return f(std::forward<Input>(i)) ? toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<Reduction>(r), std::forward<Input>(i), reduced)
+                            : std::forward<Reduction>(r);
+            }
+        };
+
+        template<typename _FilteringFunctor>
+        class FilteringTransducer
+        {
+            stored_argument_t<_FilteringFunctor> _f;
+        public:
+            static const bool has_one_to_one_output_type = true;
+
+            template<typename input_type>
+            using output_type = typename std::remove_reference<input_type>::type;
+
+            template<typename FilteringFunction,
+                REQUIRES(std::is_same<_FilteringFunctor, FilteringFunction>::value)>
+            explicit FilteringTransducer(FilteringFunction&& f) : _f(std::forward<FilteringFunction>(f)) {}
+
+            template<typename _Red>
+            auto apply(_Red&& rf) const
+            {
+                return FilterReductionFunction<_FilteringFunctor, _Red>(_f, std::forward<_Red>(rf));
+            }
+        };
+    }
+
+    template<typename FilteringFunction>
+    auto filtering(FilteringFunction&& f)
+    {
+        return details::FilteringTransducer<FilteringFunction>(std::forward<FilteringFunction>(f));
+    };
+}

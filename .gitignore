@@ -1,3 +1,13 @@
+# Visual Studio stuff
+*.sdf
+*.opensdf
+*proj.filters
+*proj.user
+Debug/
+Release/
+*.suo
+*.ide
+
 # Compiled Object files
 *.slo
 *.lo

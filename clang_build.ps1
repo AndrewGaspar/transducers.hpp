@@ -1,0 +1,1 @@
+clang++ -static-libstdc++ -std=c++14 -I .\include test\mapping.cpp -o mapping.exe
