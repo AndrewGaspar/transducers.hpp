@@ -1,6 +1,6 @@
 #pragma once
 
-#include "type_traits.hpp"
+#include "transducers/type_traits.hpp"
 
 namespace transducers {
     namespace toolbox {

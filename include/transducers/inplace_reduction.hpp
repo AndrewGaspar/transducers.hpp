@@ -1,7 +1,7 @@
 #pragma once
 
-#include "type_traits.hpp"
-#include "conditional_move.hpp"
+#include "transducers/type_traits.hpp"
+#include "transducers/conditional_move.hpp"
 
 namespace transducers {
     template<typename _Red>

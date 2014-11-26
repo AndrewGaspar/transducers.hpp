@@ -3,9 +3,9 @@
 #include <type_traits>
 #include <memory>
 
-#include "type_traits.hpp"
-#include "escape_hatch.hpp"
-#include "conditional_move.hpp"
+#include "transducers/type_traits.hpp"
+#include "transducers/escape_hatch.hpp"
+#include "transducers/conditional_move.hpp"
 
 namespace transducers {
 

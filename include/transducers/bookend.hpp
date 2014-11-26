@@ -1,7 +1,7 @@
 #pragma once
 
-#include "base_reducing_function.hpp"
-#include "escape_hatch.hpp"
+#include "transducers/base_reducing_function.hpp"
+#include "transducers/escape_hatch.hpp"
 
 namespace transducers {
     namespace details {

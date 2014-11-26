@@ -1,6 +1,6 @@
 #pragma once
 
-#include "base_reducing_function.hpp"
+#include "transducers/base_reducing_function.hpp"
 
 namespace transducers {
     namespace details {

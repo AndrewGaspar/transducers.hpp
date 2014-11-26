@@ -1,7 +1,7 @@
 #pragma once
 
-#include "type_traits.hpp"
-#include "base_reducing_function.hpp"
+#include "transducers/type_traits.hpp"
+#include "transducers/base_reducing_function.hpp"
 
 namespace transducers {
 

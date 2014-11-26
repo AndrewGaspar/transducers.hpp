@@ -209,21 +209,21 @@
     <ClCompile Include="test\mapping.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\atomic_escape_hatch.hpp" />
-    <ClInclude Include="include\base_reducing_function.hpp" />
-    <ClInclude Include="include\compose.hpp" />
-    <ClInclude Include="include\conditional_move.hpp" />
-    <ClInclude Include="include\escape_hatch.hpp" />
-    <ClInclude Include="include\filtering.hpp" />
-    <ClInclude Include="include\bookend.hpp" />
-    <ClInclude Include="include\interject.hpp" />
-    <ClInclude Include="include\mapping.hpp" />
-    <ClInclude Include="include\output.hpp" />
-    <ClInclude Include="include\taking.hpp" />
-    <ClInclude Include="include\transduce.hpp" />
-    <ClInclude Include="include\type_traits.hpp" />
-    <ClInclude Include="include\into.hpp" />
-    <ClInclude Include="include\inplace_reduction.hpp" />
+    <ClInclude Include="include\transducers\atomic_escape_hatch.hpp" />
+    <ClInclude Include="include\transducers\base_reducing_function.hpp" />
+    <ClInclude Include="include\transducers\compose.hpp" />
+    <ClInclude Include="include\transducers\conditional_move.hpp" />
+    <ClInclude Include="include\transducers\escape_hatch.hpp" />
+    <ClInclude Include="include\transducers\filtering.hpp" />
+    <ClInclude Include="include\transducers\bookend.hpp" />
+    <ClInclude Include="include\transducers\interject.hpp" />
+    <ClInclude Include="include\transducers\mapping.hpp" />
+    <ClInclude Include="include\transducers\output.hpp" />
+    <ClInclude Include="include\transducers\taking.hpp" />
+    <ClInclude Include="include\transducers\transduce.hpp" />
+    <ClInclude Include="include\transducers\type_traits.hpp" />
+    <ClInclude Include="include\transducers\into.hpp" />
+    <ClInclude Include="include\transducers\inplace_reduction.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

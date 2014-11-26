@@ -10,15 +10,15 @@
 #include <random>
 #include <chrono>
 
-#include "compose.hpp"
-#include "mapping.hpp"
-#include "filtering.hpp"
-#include "transduce.hpp"
-#include "into.hpp"
-#include "output.hpp"
-#include "interject.hpp"
-#include "bookend.hpp"
-#include "taking.hpp"
+#include "transducers/compose.hpp"
+#include "transducers/mapping.hpp"
+#include "transducers/filtering.hpp"
+#include "transducers/transduce.hpp"
+#include "transducers/into.hpp"
+#include "transducers/output.hpp"
+#include "transducers/interject.hpp"
+#include "transducers/bookend.hpp"
+#include "transducers/taking.hpp"
 
 using namespace transducers;
 

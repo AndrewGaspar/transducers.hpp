@@ -1,7 +1,7 @@
 #pragma once
 
-#include "transduce.hpp"
-#include "inplace_reduction.hpp"
+#include "transducers/transduce.hpp"
+#include "transducers/inplace_reduction.hpp"
 
 namespace transducers {
     namespace details {

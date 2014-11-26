@@ -2,7 +2,7 @@
 
 #include <type_traits>
 
-#include "type_traits.hpp"
+#include "transducers/type_traits.hpp"
 
 namespace transducers {
     namespace details {
