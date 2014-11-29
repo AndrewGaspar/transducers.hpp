@@ -3,6 +3,7 @@
 #include <CppUnitTest.h>
 #include <vector>
 #include <list>
+#include <set>
 
 #include <transducers\interject.hpp>
 #include <transducers\output.hpp>
@@ -26,7 +27,21 @@ Microsoft::VisualStudio::CppUnitTestFramework::ToString<std::vector<int>>(const 
 
 template<> static
 std::wstring
+Microsoft::VisualStudio::CppUnitTestFramework::ToString<std::vector<float>>(const std::vector<float>& t)
+{
+    return ::collection_to_string(t);
+}
+
+template<> static
+std::wstring
 Microsoft::VisualStudio::CppUnitTestFramework::ToString<std::list<int>>(const std::list<int>& t)
+{
+    return ::collection_to_string(t);
+}
+
+template<> static
+std::wstring
+Microsoft::VisualStudio::CppUnitTestFramework::ToString<std::set<int>>(const std::set<int>& t)
 {
     return ::collection_to_string(t);
 }

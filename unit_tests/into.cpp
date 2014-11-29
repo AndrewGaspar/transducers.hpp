@@ -3,22 +3,25 @@
 
 #include <vector>
 #include <list>
+#include <set>
 
 #include <transducers\into.hpp>
 #include <transducers\filtering.hpp>
+#include <transducers\mapping.hpp>
 
 #include "tostring_overloads.h"
 
 using namespace transducers;
-using namespace Microsoft::VisualStudio::CppUnitTestFramework;
+
+using Assert = Microsoft::VisualStudio::CppUnitTestFramework::Assert;
 
 namespace unit_tests
 {
-	TEST_CLASS(into)
+	TEST_CLASS(IntoTests)
 	{
 	public:
 		
-		TEST_METHOD(into_list)
+		TEST_METHOD(IntoList)
 		{
             std::vector<int> input{ 1,2,3,4,5 };
             auto odd_numbers =
@@ -32,5 +35,26 @@ namespace unit_tests
             Assert::AreEqual(odd, odd_numbers, L"Only odd numbers should be filtered into list.");
 		}
 
+        /*TEST_METHOD(IntoSet)
+        {
+            std::vector<int> input{ -2, -1, 0, 1, 2 };
+            auto squaring = mapping([](int x) { return x * x; });
+            auto squared = transducers::into<std::set<int>>(squaring, input);
+
+            std::set<int> expected{ 0,1,4 };
+
+            Assert::AreEqual(expected, squared, L"Only single instance of squared");
+        }*/
+
+        TEST_METHOD(IntoVector)
+        {
+            std::vector<int> input{ -5,-3,-1,1,3,5 };
+            auto halving = mapping([](int x) { return float(x) / 2.0f; });
+            auto halved = into_vector(halving, input);
+
+            std::vector<float> expected{ -2.5f, -1.5f, -0.5f, 0.5f, 1.5f, 2.5f };
+
+            Assert::AreEqual(expected, halved, L"Things halved.");
+        }
 	};
 }
