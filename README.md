@@ -1,4 +1,10 @@
 transducers.hpp
 ===============
 
-An implementation of transducers in C++.
+## Motivation
+
+```
+auto 
+
+stream_across(compose(), std::cout, std::fstream("blank.txt"));
+```

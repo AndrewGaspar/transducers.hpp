@@ -5,6 +5,7 @@
 #include <vector>
 #include <sstream>
 #include <cstdio>
+#include <functional>
 
 #include <experimental/generator>
 #include <random>
@@ -72,7 +73,7 @@ auto comma_separate = interject(',');
 auto newline_separate = interject('\n');
 auto list_formatting = compose(comma_separate,newline);
 
-std::experimental::generator<std::wstring> random_strings(size_t lowerSize, size_t upperSize)
+std::experimental::generator<std::string> random_strings(size_t lowerSize, size_t upperSize)
 {
     using namespace transducers;
 
@@ -80,7 +81,7 @@ std::experimental::generator<std::wstring> random_strings(size_t lowerSize, size
 
     for (;;)
     {
-        std::wstringstream s_stream;
+        std::stringstream s_stream;
         output_to(compose(byte_to_char, taking(distribution(random_engine))), s_stream, random_uniform_values(0, 51));
         __yield_value s_stream.str();
     }
@@ -95,7 +96,7 @@ std::experimental::generator<_Integer> range(_Integer from, _Integer to)
     }
 }
 
-void from_count(std::wstringstream & s_stream, size_t count)
+void from_count(std::stringstream & s_stream, size_t count)
 {
     if (count >= 52)
     {
@@ -104,12 +105,12 @@ void from_count(std::wstringstream & s_stream, size_t count)
     s_stream << maps_byte_to_char(count % 52);
 }
 
-std::experimental::generator<std::wstring> counting_strings()
+std::experimental::generator<std::string> counting_strings()
 {
 
-    for (auto & x : range<size_t>(0, SIZE_MAX))
+    for (auto & x : range<size_t>(0, std::numeric_limits<size_t>::max()))
     {
-        std::wstringstream myStream;
+        std::stringstream myStream;
         from_count(myStream, x);
         __yield_value myStream.str();
     }
@@ -130,17 +131,17 @@ auto get_cool_transducer()
     );
 }
 
-std::wstring capitalize(std::wstring const & string)
+std::string capitalize(std::string const & string)
 {
-    std::wstringstream str_stream;
-    output_to(mapping([](wchar_t a) { return wchar_t(::towupper(a)); }), str_stream, string);
+    std::stringstream str_stream;
+    output_to(mapping([](char a) { return char(::towupper(a)); }), str_stream, string);
     return str_stream.str();
 }
 
 auto capitalizes = mapping(capitalize);
 
-auto reverses = mapping([](std::wstring const & string) {
-    return std::wstring(std::make_reverse_iterator(string.end()), std::make_reverse_iterator(string.begin()));
+auto reverses = mapping([](std::string const & string) {
+    return std::string(std::make_reverse_iterator(string.end()), std::make_reverse_iterator(string.begin()));
 });
 
 template<typename T>
@@ -162,24 +163,25 @@ struct Hasher
 struct HashPairer
 {
     template<typename T>
-    std::pair<typename std::remove_reference<T>::type, size_t> operator()(T const & thing) const
+    std::pair<typename std::remove_reference<T>::type, size_t> operator()(T&& thing) const
     {
-        return{ thing, hash(thing) };
+        return{ std::forward<T>(thing), hash(thing) };
     }
 };
 
 struct HyphenSeparatePairs
 {
     template<typename _PairThing>
-    std::wstring operator()(_PairThing&& thing) const
+    std::string operator()(_PairThing&& thing) const
     {
-        std::wostringstream s_stream;
+        std::stringstream s_stream;
         s_stream << thing.first << "\t-\t" << thing.second;
         return s_stream.str();
     }
 };
 
-bool is_palindrone(std::wstring const & str)
+template<typename T>
+bool is_palindrone(T const & str)
 {
     auto begin = str.begin();
     auto end = str.end();
@@ -203,16 +205,60 @@ auto pair_with_hash = mapping(HashPairer());
 auto hyphen_separate = mapping(HyphenSeparatePairs());
 auto hash_and_hyphenate = compose(pair_with_hash, hyphen_separate);
 
+class FuncTimer
+{
+public:
+    template<typename Func>
+    std::chrono::milliseconds operator()(Func const & f) const
+    {
+        auto start = std::chrono::system_clock::now();
+        f();
+        return std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::system_clock::now() - start);
+    }
+};
+
 int main()
 {
-    std::wstring password;
+    std::string password;
 
     do
     {
-        std::wcin >> password;
-    } while (into_vector(compose(filtering([](wchar_t c) { return !::iswalpha(c); }), taking(1)), password).size());
+        std::cin >> password;
+    } while (into_vector(compose(filtering([](char c) { return !::isalpha(c); }), taking(1)), password).size());
 
-    auto guessing = compose(pair_with_hash, filtering([pass_hash = hash(password)](std::pair<std::wstring, size_t> const & hashPair) {return hashPair.second == pass_hash; }), taking(1));
+    auto pass_hash = hash(password);
 
-    output_to(compose(guessing, hyphen_separate, newlines), std::wcout, counting_strings());
+    using void_function = std::function<void(void)>;
+
+    void_function func1 = [&, pass_hash]() {
+        auto guessing = compose(hashes, filtering([=](size_t const & hash) {return hash == pass_hash; }), taking(1));
+        output_to(compose(guessing, newlines), std::cout, counting_strings());
+    };
+
+    void_function func2 = [&, pass_hash]() {
+        for (auto const & guess : counting_strings())
+        {
+            auto hash_guess = hash(guess);
+            if (hash_guess == pass_hash)
+            {
+                std::cout << hash_guess << std::endl;
+                return;
+            }
+        }
+    };
+
+    auto prints_ms = [](std::chrono::milliseconds const & time) {
+        std::stringstream stream;
+        stream << "Elapsed time: " << time.count() << " ms";
+        return stream.str();
+    };
+
+    auto format_times = compose(mapping(prints_ms), newlines);
+
+    for (;;)
+    {
+        auto timings = into_vector(mapping(FuncTimer()), std::vector<void_function> { func1, func2 });
+
+        output_to(format_times, std::cout, timings);
+    }
 }
