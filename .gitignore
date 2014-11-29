@@ -5,6 +5,7 @@
 *proj.user
 Debug/
 Release/
+ipch/
 *.suo
 *.ide
 

@@ -206,9 +206,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="test\mapping.cpp" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="include\transducers\atomic_escape_hatch.hpp" />
     <ClInclude Include="include\transducers\base_reducing_function.hpp" />
     <ClInclude Include="include\transducers\compose.hpp" />

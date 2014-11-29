@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "transducers/transduce.hpp"
 #include "transducers/inplace_reduction.hpp"
 
