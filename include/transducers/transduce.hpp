@@ -10,20 +10,21 @@
 namespace transducers {
 
     template<typename ReducingFunctor, typename Reduction, typename input_range, typename _EsHa>
-    auto reduce(ReducingFunctor & rf, Reduction&& result, input_range&& input, _EsHa eh)
+    auto reduce(ReducingFunctor & rf, Reduction result, input_range&& input, _EsHa eh)
     {
         stored_argument_t<input_range> storedInput(std::forward<input_range>(input));
+        Reduction reduction = std::move(result);
 
         for (auto&& x : storedInput)
         {
-            result = rf.step(result, move_if_owned<input_range&&>(x), eh);
+            reduction = rf.step(reduction, move_if_owned<input_range&&>(x), eh);
             if (eh.should_terminate())
             {
                 break;
             }
         }
 
-        return rf.complete(result);
+        return rf.complete(reduction);
     }
 
     template<typename _Tr, typename _Red, typename Reduction, typename _InRa, typename _EsHa>

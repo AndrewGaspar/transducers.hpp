@@ -12,7 +12,8 @@ namespace transducers {
             _It step(_It iterator, _In&& input, _EsHa & hatch) const
             {
                 *iterator = input;
-                return ++iterator;
+                ++iterator;
+                return iterator;
             }
 
             _It complete(_It iterator) const

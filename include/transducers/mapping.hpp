@@ -14,7 +14,7 @@ namespace transducers {
             MappingReductionFunction(_MapFu const & f, _Rf&& rf) : f(f), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename Reduction, typename Input, typename _EsHa>
-            stored_argument_t<Reduction> step(Reduction&& r, Input&& i, _EsHa & reduced)
+            Reduction step(Reduction r, Input&& i, _EsHa & reduced)
             {
                 return toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<Reduction>(r), f(std::forward<Input>(i)), reduced);
             }

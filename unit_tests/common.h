@@ -4,14 +4,22 @@
 
 #include <transducers\mapping.hpp>
 
-class Increments
+template<int x>
+class Adds
 {
 public:
     template<typename T>
-    T operator()(T input) const
+    constexpr T operator()(T input) const
     {
-        return input + 1;
+        return T(input + x);
     }
 };
 
-auto incrementing = transducers::mapping(Increments());
+class Increments : public Adds<1>
+{};
+
+class Decrements : public Adds<-1>
+{};
+
+auto const incrementing = transducers::mapping(Increments());
+auto const decrementing = transducers::mapping(Decrements());

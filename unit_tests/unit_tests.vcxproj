@@ -157,6 +157,7 @@
     <ClInclude Include="tostring_overloads.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="compose.cpp" />
     <ClCompile Include="into.cpp" />
     <ClCompile Include="into_it.cpp" />
     <ClCompile Include="stdafx.cpp">

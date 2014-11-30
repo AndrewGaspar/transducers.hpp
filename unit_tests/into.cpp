@@ -34,18 +34,7 @@ namespace unit_tests
 
             Assert::AreEqual(odd, odd_numbers, L"Only odd numbers should be filtered into list.");
 		}
-
-        /*TEST_METHOD(IntoSet)
-        {
-            std::vector<int> input{ -2, -1, 0, 1, 2 };
-            auto squaring = mapping([](int x) { return x * x; });
-            auto squared = transducers::into<std::set<int>>(squaring, input);
-
-            std::set<int> expected{ 0,1,4 };
-
-            Assert::AreEqual(expected, squared, L"Only single instance of squared");
-        }*/
-
+        
         TEST_METHOD(IntoVector)
         {
             std::vector<int> input{ -5,-3,-1,1,3,5 };
