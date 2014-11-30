@@ -5,7 +5,7 @@
 #include <list>
 #include <set>
 
-#include <transducers\interject.hpp>
+#include <transducers\interjecting.hpp>
 #include <transducers\output.hpp>
 
 template<typename T>
@@ -14,7 +14,7 @@ std::wstring collection_to_string(T const & t)
     using namespace transducers;
 
     std::wstringstream stream;
-    output_to(interject(','), stream, t);
+    output_to(interjecting(','), stream, t);
     return stream.str();
 }
 

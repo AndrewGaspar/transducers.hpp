@@ -18,8 +18,20 @@ namespace transducers {
             {
                 if (skipped_first)
                 {
+                    auto&& reduction = 
+                        toolbox::base_reducing_function<_Rf>
+                            ::m_rf.step(
+                                std::forward<_Red>(r), 
+                                m_interjection, 
+                                reduced);
+
+                    if (reduced.should_terminate())
+                    {
+                        return reduction;
+                    }
+
                     return toolbox::base_reducing_function<_Rf>::m_rf.step(
-                        toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), m_interjection, reduced), 
+                        std::forward<_Red>(reduction), 
                         std::forward<_Input>(i), 
                         reduced);
                 }
@@ -48,7 +60,7 @@ namespace transducers {
     }
 
     template<typename _IntT>
-    auto interject(_IntT&& interjection)
+    auto interjecting(_IntT&& interjection)
     {
         return details::InterjectionTransducer<_IntT>(std::forward<_IntT>(interjection));
     }

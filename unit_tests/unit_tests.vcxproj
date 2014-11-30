@@ -159,6 +159,7 @@
   <ItemGroup>
     <ClCompile Include="compose.cpp" />
     <ClCompile Include="filtering.cpp" />
+    <ClCompile Include="interjecting.cpp" />
     <ClCompile Include="into.cpp" />
     <ClCompile Include="into_it.cpp" />
     <ClCompile Include="stdafx.cpp">
