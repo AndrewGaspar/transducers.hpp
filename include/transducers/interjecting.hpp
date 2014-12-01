@@ -14,11 +14,11 @@ namespace transducers {
             InterjectionReducingFunction(_IntT const & interjection, _Rf&& rf) : m_interjection(interjection), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename _Red, typename _Input, typename _EsHa>
-            stored_argument_t<_Red> step(_Red&& r, _Input&& i, _EsHa & reduced)
+            _Red step(_Red r, _Input&& i, _EsHa & reduced)
             {
                 if (skipped_first)
                 {
-                    auto&& reduction = 
+                    auto reduction = 
                         toolbox::base_reducing_function<_Rf>
                             ::m_rf.step(
                                 std::forward<_Red>(r), 

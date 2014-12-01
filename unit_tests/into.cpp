@@ -6,6 +6,7 @@
 #include <set>
 
 #include <transducers\into.hpp>
+#include <transducers\into_vector.hpp>
 #include <transducers\filtering.hpp>
 #include <transducers\mapping.hpp>
 

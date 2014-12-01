@@ -9,6 +9,7 @@
 #include <transducers\mapping.hpp>
 #include <transducers\compose.hpp>
 #include <transducers\into_it.hpp>
+#include <transducers\into_vector.hpp>
 #include <transducers\into.hpp>
 
 using namespace transducers;

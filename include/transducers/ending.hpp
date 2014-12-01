@@ -14,7 +14,7 @@ namespace transducers {
             BookendReducingFunction(_BooT const & bookend, _Rf&& rf) : m_bookend(bookend), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename _Red, typename _Input, typename _EsHa>
-            stored_argument_t<_Red> step(_Red&& r, _Input&& i, _EsHa & reduced)
+            _Red step(_Red r, _Input&& i, _EsHa & reduced)
             {
                 auto&& reduction = toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), std::forward<_Input>(i), reduced);
                 has_seen_completion = reduced.should_terminate();

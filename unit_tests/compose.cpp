@@ -5,6 +5,7 @@
 
 #include <transducers\compose.hpp>
 #include <transducers\into.hpp>
+#include <transducers\into_vector.hpp>
 
 using namespace transducers;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

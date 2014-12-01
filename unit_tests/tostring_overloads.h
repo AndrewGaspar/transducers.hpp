@@ -6,16 +6,14 @@
 #include <set>
 
 #include <transducers\interjecting.hpp>
-#include <transducers\output.hpp>
+#include <transducers\output_to_string.hpp>
 
 template<typename T>
 std::wstring collection_to_string(T const & t)
 {
     using namespace transducers;
 
-    std::wstringstream stream;
-    output_to(interjecting(','), stream, t);
-    return stream.str();
+    return output_to_string<wchar_t>(interjecting(','), t);
 }
 
 template<> static

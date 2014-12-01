@@ -12,7 +12,7 @@ namespace transducers {
             TakingReducingFunction(size_t numToTake, _Rf&& rf) : m_numRemaining(numToTake), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename _Re, typename _In, typename _EsHa>
-            stored_argument_t<_Re> step(_Re&& r, _In&& i, _EsHa & hatch)
+            _Re step(_Re r, _In&& i, _EsHa & hatch)
             {
                 auto&& reduction = toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Re>(r), std::forward<_In>(i), hatch);
                 m_numRemaining--;

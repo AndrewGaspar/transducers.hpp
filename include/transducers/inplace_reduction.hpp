@@ -10,7 +10,7 @@ namespace transducers {
     public:
         stored_argument_t<_Red> m_reduction;
 
-        inplace_reduction(inplace_reduction const & cr) = delete;
+        inplace_reduction(inplace_reduction const & cr) : m_reduction(cr.m_reduction) {};
 
         template<typename _RedP, REQUIRES(std::is_same<typename std::remove_reference<_Red>::type, typename std::remove_reference<_RedP>::type>::value)>
         inplace_reduction(_RedP&& collection) : m_reduction(std::forward<_RedP>(collection)) {}
