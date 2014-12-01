@@ -212,7 +212,7 @@
     <ClInclude Include="include\transducers\conditional_move.hpp" />
     <ClInclude Include="include\transducers\escape_hatch.hpp" />
     <ClInclude Include="include\transducers\filtering.hpp" />
-    <ClInclude Include="include\transducers\bookend.hpp" />
+    <ClInclude Include="include\transducers\ending.hpp" />
     <ClInclude Include="include\transducers\interjecting.hpp" />
     <ClInclude Include="include\transducers\into_it.hpp" />
     <ClInclude Include="include\transducers\mapping.hpp" />
@@ -222,6 +222,7 @@
     <ClInclude Include="include\transducers\type_traits.hpp" />
     <ClInclude Include="include\transducers\into.hpp" />
     <ClInclude Include="include\transducers\inplace_reduction.hpp" />
+    <ClInclude Include="include\transducers\output_to_string.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

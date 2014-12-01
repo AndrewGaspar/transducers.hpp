@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="compose.cpp" />
+    <ClCompile Include="ending.cpp" />
     <ClCompile Include="filtering.cpp" />
     <ClCompile Include="interjecting.cpp" />
     <ClCompile Include="into.cpp" />

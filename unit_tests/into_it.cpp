@@ -7,7 +7,6 @@
 #include <iterator>
 
 #include <transducers\into_it.hpp>
-#include <transducers\bookend.hpp>
 
 using namespace transducers;
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;

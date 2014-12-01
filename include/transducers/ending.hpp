@@ -56,7 +56,7 @@ namespace transducers {
     }
 
     template<typename _BooT>
-    auto bookend(_BooT&& bookend)
+    auto ending(_BooT&& bookend)
     {
         return details::BookendTransducer<_BooT>(std::forward<_BooT>(bookend));
     }

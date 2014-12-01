@@ -46,7 +46,7 @@ namespace transducers {
     }
 
     // will always produce at least one input, even if you provide a value <= 0
-    auto taking(size_t numberToTake)
+    inline auto taking(size_t numberToTake)
     {
         return details::TakingTransducer(numberToTake);
     }
