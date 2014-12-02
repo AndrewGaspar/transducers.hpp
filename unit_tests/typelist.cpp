@@ -42,5 +42,9 @@ namespace unit_tests
         static_assert(are_typelists_equivalent<float_int_bool, int_bool_float>::value, "float_int_bool and int_bool_float are equivalent.");
         static_assert(are_typelists_equivalent<int_bool_float, bool_float_int>::value, "int_bool_float and bool_float_int are equivalent.");
         static_assert(are_typelists_equivalent<bool_float_int, float_int_bool>::value, "bool_float_int and float_int_bool are equivalent.");
+
+        static_assert(std::is_same<typename nth_type<float_int_bool, 0>::type, float>::value, "0th type in float_int_bool is float.");
+        static_assert(std::is_same<typename nth_type<float_int_bool, 1>::type, int>::value, "1st type in float_int_bool is int.");
+        static_assert(std::is_same<typename nth_type<float_int_bool, 2>::type, bool>::value, "2nd type in float_int_bool is bool.");
 	};
 }

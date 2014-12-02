@@ -125,4 +125,22 @@ namespace transducers {
         is_typelist_subset_of<_left, _right>::value && is_typelist_subset_of<_right, _left>::value>
     {
     };
+
+    template<typename _tl>
+    struct typelist_length : std::integral_constant<size_t, _tl::length>
+    {
+
+    };
+
+    template<typename _tl, size_t _n>
+    struct nth_type
+    {
+        using type = typename nth_type<typename _tl::tail, _n-1>::type;
+    };
+
+    template<typename _tl>
+    struct nth_type<_tl, 0>
+    {
+        using type = typename _tl::head;
+    };
 }
