@@ -4,6 +4,33 @@
 
 using namespace transducers;
 
+struct type_expander
+{
+    template<typename T>
+    struct transform
+    {
+        // no-op
+    };
+
+    template<>
+    struct transform<int>
+    {
+        using type = int64_t;
+    };
+
+    template<>
+    struct transform<float>
+    {
+        using type = double;
+    };
+
+    template<>
+    struct transform<bool>
+    {
+        using type = uint8_t;
+    };
+};
+
 namespace unit_tests
 {
 	class TypelistAssertions
@@ -43,8 +70,13 @@ namespace unit_tests
         static_assert(are_typelists_equivalent<int_bool_float, bool_float_int>::value, "int_bool_float and bool_float_int are equivalent.");
         static_assert(are_typelists_equivalent<bool_float_int, float_int_bool>::value, "bool_float_int and float_int_bool are equivalent.");
 
-        static_assert(std::is_same<typename nth_type<float_int_bool, 0>::type, float>::value, "0th type in float_int_bool is float.");
-        static_assert(std::is_same<typename nth_type<float_int_bool, 1>::type, int>::value, "1st type in float_int_bool is int.");
-        static_assert(std::is_same<typename nth_type<float_int_bool, 2>::type, bool>::value, "2nd type in float_int_bool is bool.");
+        static_assert(std::is_same<typename nth_type<float_int_bool, 0>::type, float>::value, "1st type in float_int_bool is float.");
+        static_assert(std::is_same<typename nth_type<float_int_bool, 1>::type, int>::value, "2nd type in float_int_bool is int.");
+        static_assert(std::is_same<typename nth_type<float_int_bool, 2>::type, bool>::value, "3rd type in float_int_bool is bool.");
+
+        using double_int64_byte = transform_typelist<float_int_bool, type_expander>;
+        static_assert(std::is_same<typename nth_type<double_int64_byte, 0>::type, double>::value, "1st type in double_int64_byte is double.");
+        static_assert(std::is_same<typename nth_type<double_int64_byte, 1>::type, int64_t>::value, "2nd type in double_int64_byte is int64_t.");
+        static_assert(std::is_same<typename nth_type<double_int64_byte, 2>::type, uint8_t>::value, "3rd type in double_int64_byte is uint8_t.");
 	};
 }

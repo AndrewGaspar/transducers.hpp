@@ -112,10 +112,9 @@ namespace transducers {
         subset,
         superset,
         typename std::enable_if<
-        !has_tail<subset>::value
-        &&
-        has_type<superset, typename subset::head>::value,
-        bool
+            !has_tail<subset>::value
+                && has_type<superset, typename subset::head>::value,
+            bool
         >::type
     >: std::true_type
     {};
@@ -142,5 +141,25 @@ namespace transducers {
     struct nth_type<_tl, 0>
     {
         using type = typename _tl::head;
+    };
+
+    template<typename _tl, typename _tr, typename _v = bool>
+    struct transform_typelist
+    {
+        using head = typename _tr::template transform<typename _tl::head>::type;
+        static const size_t length = 1;
+    };
+
+    template<typename _tl, typename _tr>
+    struct transform_typelist<_tl, _tr,
+        typename std::enable_if<
+            has_tail<_tl>::value,
+            bool
+        >::type
+    >
+    {
+        using head = typename _tr::template transform<typename _tl::head>::type;
+        using tail = typename transform_typelist<typename _tl::tail, _tr>;
+        static const size_t length = tail::length + 1;
     };
 }
