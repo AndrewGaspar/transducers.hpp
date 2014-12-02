@@ -3,6 +3,7 @@
 #include <transducers\typelist.hpp>
 
 #include <string>
+#include <sstream>
 
 using namespace transducers;
 
@@ -40,6 +41,17 @@ struct stringifier
     {
         using type = std::string;
     };
+};
+
+struct stringifies
+{
+    template<typename T>
+    auto operator()(T&& value) const
+    {
+        std::stringstream stream;
+        stream << value;
+        return stream.str();
+    }
 };
 
 namespace unit_tests
@@ -94,5 +106,8 @@ namespace unit_tests
 
         using just_string = transform_typelist<double_int64_byte, stringifier>;
         static_assert(are_typelists_equivalent<just_string, transducers::typelist<std::string>>::value, "The stringifier type transformer should produce a typelist of just string.");
+
+        using also_just_string = transform_typelist_with_functor<transducers::typelist<bool, int, char, uint32_t, std::string>, stringifies>;
+        static_assert(are_typelists_equivalent<also_just_string, transducers::typelist<std::string>>::value, "stringifies should return strings for all these types.");
 	};
 }

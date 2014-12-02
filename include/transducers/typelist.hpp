@@ -205,4 +205,19 @@ namespace transducers {
 
     template<typename _tl, typename _tr>
     struct transform_typelist : details::remove_duplicates<details::_private_transform_typelist<_tl, _tr>> {};
+
+    namespace details {
+        template<typename _Fu>
+        struct functor_transformer
+        {
+            template<typename _InTy>
+            struct transform
+            {
+                using type = decltype(std::declval<_Fu>()((std::declval<_InTy>())));
+            };
+        };
+    }
+
+    template<typename _tl, typename _Functor>
+    struct transform_typelist_with_functor : transform_typelist<_tl, details::functor_transformer<_Functor>> {};
 }
