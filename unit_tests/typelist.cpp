@@ -25,5 +25,22 @@ namespace unit_tests
         static_assert(my_list::length == extend_typelist<my_list, bool>::length, "my_list extended with bool should be the same as my_list");
         static_assert(my_list::length + 1 == extend_typelist<my_list, char>::length, "my_list extended with char should extend the length of my_list by 1");
 
+        using short_list = transducers::typelist<int>;
+        static_assert(short_list::length == 1, "1 element in short_list");
+        static_assert(short_list::length == extend_typelist<short_list, int>::length, "short_list extended with int should be the same as short_list");
+        static_assert(short_list::length + 1 == extend_typelist<short_list, char>::length, "short_list extended with char should extend short_list by 1");
+
+        using float_int = transducers::typelist<float, int>;
+        using int_bool_float = transducers::typelist<int, bool, float>;
+        static_assert(is_typelist_subset_of<float_int, int_bool_float>::value, "float_int should be a subset of int_bool_float");
+        static_assert(!is_typelist_subset_of<int_bool_float, float_int>::value, "int_bool_float is not a subset of float_int");
+        static_assert(!are_typelists_equivalent<int_bool_float, float_int>::value, "int_bool_float is not equivalent to float_int");
+
+        using float_int_bool = transducers::typelist<float, int, bool>;
+        using int_bool_float = transducers::typelist<int, bool, float>;
+        using bool_float_int = transducers::typelist<bool, float, int>;
+        static_assert(are_typelists_equivalent<float_int_bool, int_bool_float>::value, "float_int_bool and int_bool_float are equivalent.");
+        static_assert(are_typelists_equivalent<int_bool_float, bool_float_int>::value, "int_bool_float and bool_float_int are equivalent.");
+        static_assert(are_typelists_equivalent<bool_float_int, float_int_bool>::value, "bool_float_int and float_int_bool are equivalent.");
 	};
 }

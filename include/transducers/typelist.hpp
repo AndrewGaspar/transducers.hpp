@@ -2,8 +2,6 @@
 
 #include <type_traits>
 
-#include "transducers\type_traits.hpp"
-
 namespace transducers {
     template<typename... _Types>
     struct typelist;
@@ -86,6 +84,45 @@ namespace transducers {
         bool
     >::type
     > : _tl
+    {
+    };
+
+    template<typename subset, typename superset, typename _v = bool>
+    struct is_typelist_subset_of : std::false_type
+    {
+    };
+
+    template<typename subset, typename superset>
+    struct is_typelist_subset_of<
+        subset,
+        superset,
+        typename std::enable_if<
+            has_type<superset, typename subset::head>::value
+            && 
+            has_tail<subset>::value
+            &&
+            is_typelist_subset_of<typename subset::tail, superset>::value,
+            bool
+        >::type
+    >: std::true_type
+    {};
+
+    template<typename subset, typename superset>
+    struct is_typelist_subset_of<
+        subset,
+        superset,
+        typename std::enable_if<
+        !has_tail<subset>::value
+        &&
+        has_type<superset, typename subset::head>::value,
+        bool
+        >::type
+    >: std::true_type
+    {};
+
+    template<typename _left, typename _right>
+    struct are_typelists_equivalent : std::integral_constant<bool, 
+        is_typelist_subset_of<_left, _right>::value && is_typelist_subset_of<_right, _left>::value>
     {
     };
 }
