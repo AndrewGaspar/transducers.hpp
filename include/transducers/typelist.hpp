@@ -3,32 +3,14 @@
 #include <type_traits>
 
 namespace transducers {
-    template<typename... _Types>
-    struct typelist;
-
-    template<typename _H>
-    struct typelist<_H>
-    {
-        static const size_t length = 1;
-        using head = _H;
-    };
-
-    template<typename _H, typename... _Rest>
-    struct typelist<_H, _Rest...>
-    {
-        using head = _H;
-        using tail = typelist<_Rest...>;
-        static const size_t length = tail::length + 1;
-    };
-
     template<typename T, typename V = bool>
     struct has_tail : std::false_type {};
 
     template<typename T>
     struct has_tail<T,
         typename std::enable_if<
-            !std::is_same<typename T::tail, void>::value,
-            bool
+        !std::is_same<typename T::tail, void>::value,
+        bool
         >::type
     > : std::true_type
     {
@@ -39,29 +21,29 @@ namespace transducers {
     struct has_type : std::false_type {};
 
     template<typename typelist, typename type>
-    struct has_type<typelist, type, 
+    struct has_type<typelist, type,
         typename std::enable_if<
-            std::is_same<
-                typename typelist::head,
-                type
-            >::value
-            || 
-            has_type<typename typelist::tail, type>::value,
-            bool
+        std::is_same<
+        typename typelist::head,
+        type
+        >::value
+        ||
+        has_type<typename typelist::tail, type>::value,
+        bool
         >::type
     > : std::true_type
     {
 
-    }; 
-    
+    };
+
     template<typename typelist, typename type>
     struct has_type<typelist, type,
         typename std::enable_if<
         !has_tail<typelist>::value
         &&
         std::is_same<
-            typename typelist::head,
-            type
+        typename typelist::head,
+        type
         >::value,
         bool
         >::type
@@ -69,6 +51,60 @@ namespace transducers {
     {
 
     };
+
+    namespace details {
+        template<typename _tl, typename _v = bool>
+        struct remove_duplicates : _tl
+        {
+
+        };
+
+        template<typename _tl>
+        struct remove_duplicates<_tl,
+            typename std::enable_if<
+                has_tail<_tl>::value && has_type<typename _tl::tail, typename _tl::head>::value,
+                bool
+            >::type
+        > : remove_duplicates<typename _tl::tail>
+        {
+
+        };
+
+        template<typename _tl>
+        struct remove_duplicates<_tl,
+            typename std::enable_if <
+                has_tail<_tl>::value && !has_type<typename _tl::tail, typename _tl::head>::value,
+                bool
+            >::type
+        >
+        {
+            using head = typename _tl::head;
+            using tail = typename remove_duplicates<typename _tl::tail>;
+            static const size_t length = tail::length + 1;
+        };
+
+        template<typename... _Types>
+        struct _raw_typelist;
+
+        template<typename _H>
+        struct _raw_typelist<_H>
+        {
+            static const size_t length = 1;
+            using head = _H;
+        };
+
+        template<typename _H, typename... _Rest>
+        struct _raw_typelist<_H, _Rest...>
+        {
+            using head = _H;
+            using tail = _raw_typelist<_Rest...>;
+            static const size_t length = tail::length + 1;
+        };
+    }
+
+    template<typename... _Types>
+    struct typelist : details::remove_duplicates<details::_raw_typelist<_Types...>> {};
+
 
     template<typename _tl, typename _ty, typename _v = bool>
     struct extend_typelist
@@ -97,11 +133,10 @@ namespace transducers {
         subset,
         superset,
         typename std::enable_if<
-            has_type<superset, typename subset::head>::value
-            && 
-            has_tail<subset>::value
-            &&
-            is_typelist_subset_of<typename subset::tail, superset>::value,
+            subset::length <= superset::length
+            && has_type<superset, typename subset::head>::value
+            && has_tail<subset>::value
+            && is_typelist_subset_of<typename subset::tail, superset>::value,
             bool
         >::type
     >: std::true_type
@@ -112,16 +147,18 @@ namespace transducers {
         subset,
         superset,
         typename std::enable_if<
-            !has_tail<subset>::value
-                && has_type<superset, typename subset::head>::value,
+            subset::length <= superset::length
+            && !has_tail<subset>::value
+            && has_type<superset, typename subset::head>::value,
             bool
         >::type
     >: std::true_type
     {};
 
     template<typename _left, typename _right>
-    struct are_typelists_equivalent : std::integral_constant<bool, 
-        is_typelist_subset_of<_left, _right>::value && is_typelist_subset_of<_right, _left>::value>
+    struct are_typelists_equivalent : std::integral_constant<bool, _left::length == _right::length
+        && is_typelist_subset_of<_left, _right>::value
+        && is_typelist_subset_of<_right, _left>::value>
     {
     };
 
@@ -143,23 +180,29 @@ namespace transducers {
         using type = typename _tl::head;
     };
 
-    template<typename _tl, typename _tr, typename _v = bool>
-    struct transform_typelist
-    {
-        using head = typename _tr::template transform<typename _tl::head>::type;
-        static const size_t length = 1;
-    };
+    namespace details {
 
-    template<typename _tl, typename _tr>
-    struct transform_typelist<_tl, _tr,
-        typename std::enable_if<
+        template<typename _tl, typename _tr, typename _v = bool>
+        struct _private_transform_typelist
+        {
+            using head = typename _tr::template transform<typename _tl::head>::type;
+            static const size_t length = 1;
+        };
+
+        template<typename _tl, typename _tr>
+        struct _private_transform_typelist<_tl, _tr,
+            typename std::enable_if<
             has_tail<_tl>::value,
             bool
-        >::type
-    >
-    {
-        using head = typename _tr::template transform<typename _tl::head>::type;
-        using tail = typename transform_typelist<typename _tl::tail, _tr>;
-        static const size_t length = tail::length + 1;
-    };
+            >::type
+        >
+        {
+            using head = typename _tr::template transform<typename _tl::head>::type;
+            using tail = typename _private_transform_typelist<typename _tl::tail, _tr>;
+            static const size_t length = tail::length + 1;
+        };
+    }
+
+    template<typename _tl, typename _tr>
+    struct transform_typelist : details::remove_duplicates<details::_private_transform_typelist<_tl, _tr>> {};
 }

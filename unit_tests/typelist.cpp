@@ -2,6 +2,8 @@
 
 #include <transducers\typelist.hpp>
 
+#include <string>
+
 using namespace transducers;
 
 struct type_expander
@@ -28,6 +30,15 @@ struct type_expander
     struct transform<bool>
     {
         using type = uint8_t;
+    };
+};
+
+struct stringifier
+{
+    template<typename T>
+    struct transform
+    {
+        using type = std::string;
     };
 };
 
@@ -78,5 +89,10 @@ namespace unit_tests
         static_assert(std::is_same<typename nth_type<double_int64_byte, 0>::type, double>::value, "1st type in double_int64_byte is double.");
         static_assert(std::is_same<typename nth_type<double_int64_byte, 1>::type, int64_t>::value, "2nd type in double_int64_byte is int64_t.");
         static_assert(std::is_same<typename nth_type<double_int64_byte, 2>::type, uint8_t>::value, "3rd type in double_int64_byte is uint8_t.");
+
+        static_assert(transducers::typelist<int, int, int>::length == 1, "The duplicates ints should be removed.");
+
+        using just_string = transform_typelist<double_int64_byte, stringifier>;
+        static_assert(are_typelists_equivalent<just_string, transducers::typelist<std::string>>::value, "The stringifier type transformer should produce a typelist of just string.");
 	};
 }
