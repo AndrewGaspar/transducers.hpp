@@ -5,7 +5,7 @@
 #include <list>
 #include <set>
 
-#include <transducers\into.hpp>
+#include <transducers\into_back.hpp>
 #include <transducers\into_vector.hpp>
 #include <transducers\filtering.hpp>
 #include <transducers\mapping.hpp>
@@ -26,7 +26,7 @@ namespace unit_tests
 		{
             std::vector<int> input{ 1,2,3,4,5 };
             auto odd_numbers =
-                transducers::into<std::list<int>>(
+                transducers::into_back<std::list<int>>(
                     filtering([](int x) { return x % 2 == 1; }),
                     input
                 );

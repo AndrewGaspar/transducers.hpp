@@ -170,6 +170,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="mapping.cpp" />
+    <!--<ClCompile Include="typelist.cpp" />-->
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\transducers.hpp.vcxproj">

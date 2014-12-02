@@ -8,7 +8,7 @@
 
 #include <transducers\ending.hpp>
 #include <transducers\output_to_string.hpp>
-#include <transducers\into.hpp>
+#include <transducers\into_back.hpp>
 #include <transducers\taking.hpp>
 #include <transducers\compose.hpp>
 
@@ -31,7 +31,7 @@ namespace unit_tests
         TEST_METHOD(EndingRespectsTermination)
         {
             std::vector<int> input{ 1,2,3 };
-            auto subset = into<std::vector<int>>(compose(ending(4), taking(2)), input);
+            auto subset = into_back<std::vector<int>>(compose(ending(4), taking(2)), input);
             std::vector<int> expected{ 1,2 };
             Assert::AreEqual(expected, subset);
         }
@@ -39,7 +39,7 @@ namespace unit_tests
         TEST_METHOD(EndingAfterTaking)
         {
             std::vector<int> input{ 1,2,3 };
-            auto subset = into<std::vector<int>>(compose(taking(2), ending(4)), input);
+            auto subset = into_back<std::vector<int>>(compose(taking(2), ending(4)), input);
             std::vector<int> expected{ 1,2,4 };
             Assert::AreEqual(expected, subset);
         }
