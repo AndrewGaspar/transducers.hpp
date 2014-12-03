@@ -1,10 +1,4 @@
 transducers.hpp
 ===============
 
-## Motivation
-
-```
-auto 
-
-stream_across(compose(), std::cout, std::fstream("blank.txt"));
-```
+A library for creating transducing process in C++.
