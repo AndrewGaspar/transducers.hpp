@@ -7,8 +7,6 @@
 #include "transducers/typelist.hpp"
 
 namespace transducers {
-
-
     template<typename transducer_t, typename _InRa>
     auto into_vector(transducer_t&& transducer, _InRa&& input)
     {

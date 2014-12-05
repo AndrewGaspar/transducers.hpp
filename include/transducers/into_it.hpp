@@ -27,9 +27,9 @@ namespace transducers {
     {
         return transduce(
             std::forward<_InRa>(input),
+            output_iterator,
             std::forward<_Tr>(transducer),
             details::IteratorReducer<_It>(),
-            output_iterator,
             nonatomic_escape_hatch());
     }
 
