@@ -9,29 +9,27 @@
 
 namespace transducers {
 
-    template<typename ReducingFunctor, typename Reduction, typename input_range, typename _EsHa>
-    auto reduce(ReducingFunctor & rf, Reduction result, input_range&& input, _EsHa eh)
+    template<typename _It, typename _Rf, typename _Out, typename _EsHa>
+    auto reduce(_It _begin, _It _end, _Out result, _Rf & rf, _EsHa eh)
     {
-        Reduction reduction = std::move(result);
-
-        for (auto&& x : input)
+        for (auto it = _begin; it != _end; it++)
         {
-            reduction = rf.step(reduction, x, eh);
+            result = rf.step(result, *it, eh);
             if (eh.should_terminate())
             {
                 break;
             }
         }
 
-        return rf.complete(reduction);
+        return rf.complete(result);
     }
 
-    template<typename _Tr, typename _Red, typename Reduction, typename _InRa, typename _EsHa>
-    auto transduce(_Tr const & transducer, _Red&& reducer, Reduction&& result, _InRa&& input, _EsHa&& hatch)
+    template<typename _Tr, typename _Red, typename _Out, typename _InRa, typename _EsHa>
+    auto transduce(_Tr const & transducer, _Red&& reducer, _Out&& result, _InRa&& input, _EsHa&& hatch)
     {
         auto rf = transducer.apply(std::forward<_Red>(reducer));
         
-        return reduce(rf, std::forward<Reduction>(result), std::forward<_InRa>(input), std::forward<_EsHa>(hatch));
+        return reduce(input.begin(), input.end(), std::forward<_Out>(result), rf, std::forward<_EsHa>(hatch));
     }
 
     template<typename _Tr, typename _Red, typename _InRa, typename _EsHa = nonatomic_escape_hatch>
