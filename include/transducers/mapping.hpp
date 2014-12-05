@@ -1,6 +1,7 @@
 #pragma once
 
 #include "transducers/type_traits.hpp"
+#include "transducers/typelist.hpp"
 #include "transducers/base_reducing_function.hpp"
 
 namespace transducers {
@@ -14,7 +15,7 @@ namespace transducers {
             MappingReductionFunction(_MapFu const & f, _Rf&& rf) : f(f), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename Reduction, typename Input, typename _EsHa>
-            Reduction step(Reduction r, Input&& i, _EsHa & reduced)
+            Reduction step(Reduction r, Input&& i, _EsHa & reduced) const
             {
                 return toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<Reduction>(r), f(std::forward<Input>(i)), reduced);
             }
@@ -25,10 +26,8 @@ namespace transducers {
         {
             stored_argument_t<_MapFu> _f;
         public:
-            static const bool has_one_to_one_output_type = true;
-
-            template<typename _InTy>
-            using output_type = decltype(std::declval<decltype(_f)>()((std::declval<_InTy>())));
+            template<typename _InTyList>
+            using output_typelist = typename transform_typelist_with_functor<_InTyList, typename std::remove_reference<_MapFu>::type>;
 
             template<typename _MapFuP,
                 REQUIRES(std::is_same<_MapFu, _MapFuP>::value)>

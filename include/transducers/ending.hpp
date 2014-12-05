@@ -2,6 +2,7 @@
 
 #include "transducers/base_reducing_function.hpp"
 #include "transducers/escape_hatch.hpp"
+#include "transducers/typelist.hpp"
 
 namespace transducers {
     namespace details {
@@ -42,7 +43,8 @@ namespace transducers {
         {
             _BooT m_bookend;
         public:
-            static const bool has_one_to_one_output_type = false;
+            template<typename _InTyList>
+            using output_typelist = extend_typelist<_InTyList, _BooT>;
 
             template<typename _BooTP>
             BookendTransducer(_BooTP&& bookend) : m_bookend(std::forward<_BooTP>(bookend)) {}

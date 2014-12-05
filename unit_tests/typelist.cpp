@@ -1,6 +1,7 @@
 #include "stdafx.h"
 
 #include <transducers\typelist.hpp>
+#include <transducers\mapping.hpp>
 
 #include <string>
 #include <sstream>
@@ -51,6 +52,15 @@ struct stringifies
         std::stringstream stream;
         stream << value;
         return stream.str();
+    }
+};
+
+struct increments
+{
+    template<typename T>
+    auto operator()(T const & value) const
+    {
+        return value + 1;
     }
 };
 
@@ -109,5 +119,23 @@ namespace unit_tests
 
         using also_just_string = transform_typelist_with_functor<transducers::typelist<bool, int, char, uint32_t, std::string>, stringifies>;
         static_assert(are_typelists_equivalent<also_just_string, transducers::typelist<std::string>>::value, "stringifies should return strings for all these types.");
+
+        void Do()
+        {
+
+            auto incrementing = mapping(increments());
+
+            using incrementing_type = decltype(incrementing);
+            using types = incrementing_type::output_typelist<typelist<int, uint64_t>>;
+            static_assert(std::is_same<nth_type<types, 0>::type, int>::value, "first type is int");
+            static_assert(std::is_same<nth_type<types, 1>::type, uint64_t>::value, "second type is uint64_t");
+
+            auto stringifying = mapping(stringifies());
+            using stringifying_type = decltype(stringifying);
+            using stringify_out_types = stringifying_type::output_typelist<typelist<int, bool, char, std::string>>;
+
+
+            static_assert(stringify_out_types::length == 1, "Only 1 output type");
+        }
 	};
 }

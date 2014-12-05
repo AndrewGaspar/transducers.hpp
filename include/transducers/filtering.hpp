@@ -29,10 +29,8 @@ namespace transducers {
         {
             stored_argument_t<_FilteringFunctor> _f;
         public:
-            static const bool has_one_to_one_output_type = true;
-
-            template<typename input_type>
-            using output_type = typename std::remove_reference<input_type>::type;
+            template<typename _InTyList>
+            using output_typelist = _InTyList;
 
             template<typename FilteringFunction,
                 REQUIRES(std::is_same<_FilteringFunctor, FilteringFunction>::value)>

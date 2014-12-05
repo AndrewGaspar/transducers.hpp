@@ -1,6 +1,7 @@
 #pragma once
 
 #include "transducers/type_traits.hpp"
+#include "transducers/typelist.hpp"
 #include "transducers/base_reducing_function.hpp"
 
 namespace transducers {
@@ -46,7 +47,8 @@ namespace transducers {
         {
             _IntT m_interjection;
         public:
-            static const bool has_one_to_one_output_type = false;
+            template<typename _InTyList>
+            using output_typelist = extend_typelist<_InTyList, _IntT>;
 
             template<typename _IntTP>
             InterjectionTransducer(_IntTP&& interjection) : m_interjection(std::forward<_IntTP>(interjection)) {}
