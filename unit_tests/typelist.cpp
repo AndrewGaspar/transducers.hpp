@@ -123,8 +123,6 @@ namespace unit_tests
         void Do()
         {
 
-            auto incrementing = mapping(increments());
-
             using incrementing_type = decltype(incrementing);
             using types = incrementing_type::output_typelist<typelist<int, uint64_t>>;
             static_assert(std::is_same<nth_type<types, 0>::type, int>::value, "first type is int");

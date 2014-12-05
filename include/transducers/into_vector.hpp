@@ -3,7 +3,7 @@
 #include <vector>
 #include <iterator>
 
-#include "transducers/into_it.hpp"
+#include "transducers/into_back.hpp"
 #include "transducers/typelist.hpp"
 
 namespace transducers {
@@ -14,7 +14,7 @@ namespace transducers {
     {
         using transducer_type = typename std::remove_reference<transducer_t>::type;
         using collection_type = typename std::remove_reference<_InRa>::type;
-        using input_type = typename std::remove_reference<collection_type::value_type>::type;
+        using input_type = typename std::remove_reference<decltype(*(input.begin()))>::type;
         using output_typelist = typename transducer_type::template output_typelist<typelist<input_type>>;
 
         static_assert(output_typelist::length == 1, "The transducer can only output a single type to get vector output type deduction.");
@@ -22,10 +22,6 @@ namespace transducers {
         using vector_output_type = typename nth_type<output_typelist, 0>::type;
         using vector_type = std::vector<vector_output_type>;
 
-        vector_type v;
-        into_it(std::forward<transducer_t>(transducer),
-            std::forward<_InRa>(input),
-            std::back_inserter(v));
-        return v;
+        return into_back<vector_type>(std::forward<transducer_t>(transducer), std::forward<_InRa>(input));
     }
 }

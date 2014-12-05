@@ -9,8 +9,8 @@
 
 namespace transducers {
 
-    template<typename _It, typename _Out, typename _Rf, typename _EsHa>
-    auto reduce(_It _begin, _It _end, _Out result, _Rf & rf, _EsHa eh)
+    template<typename _It, typename _Out, typename _Rf, typename _EsHa = nonatomic_escape_hatch>
+    auto reduce(_It _begin, _It _end, _Out result, _Rf & rf, _EsHa eh = nonatomic_escape_hatch())
     {
         for (auto it = _begin; it != _end; it++)
         {
@@ -22,6 +22,12 @@ namespace transducers {
         }
 
         return rf.complete(result);
+    }
+
+    template<typename _It, typename _Rf, typename _EsHa = nonatomic_escape_hatch>
+    auto reduce(_It _begin, _It _end, _Rf & rf, _EsHa eh = nonatomic_escape_hatch())
+    {
+        return reduce(_begin, _end, rf.init(), rf, std::move(eh));
     }
 
     template<typename _InRa, typename _Tr, typename _Red, typename _Out,  typename _EsHa>
