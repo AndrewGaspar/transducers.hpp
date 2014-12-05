@@ -22,8 +22,8 @@ namespace transducers {
         };
     }
 
-    template<typename _Tr, typename _InRa, typename _It>
-    _It into(_Tr&& transducer, _InRa&& input, _It output_iterator)
+    template<typename _InRa, typename _It, typename _Tr>
+    _It into(_InRa&& input, _It output_iterator, _Tr&& transducer)
     {
         return transduce(
             std::forward<_InRa>(input),

@@ -22,7 +22,7 @@ namespace unit_tests
             std::vector<int> input{ 1,2,3 };
             std::vector<int> output;
 
-            into(incrementing, input, std::back_inserter(output));
+            into(input, std::back_inserter(output), incrementing);
 
             std::vector<int> expected{ 2,3,4 };
             Assert::AreEqual(expected, output, L"input incremented");
@@ -31,7 +31,7 @@ namespace unit_tests
         TEST_METHOD(ReuseVector)
         {
             std::vector<int> input{ 1,3,5 };
-            into(incrementing, input, input.begin());
+            into(input, input.begin(), incrementing);
 
             std::vector<int> expected{ 2,4,6 };
             Assert::AreEqual(expected, input, L"Input mutated");
@@ -42,7 +42,7 @@ namespace unit_tests
             std::vector<int> input{ -2, -1, 0, 1, 2 };
             auto squaring = mapping([](int x) { return x * x; });
             std::set<int> squares;
-            transducers::into(squaring, input, std::inserter(squares, squares.begin()));
+            transducers::into(input, std::inserter(squares, squares.begin()), squaring);
 
             std::set<int> expected{ 0,1,4 };
 

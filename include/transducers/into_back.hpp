@@ -9,8 +9,8 @@ namespace transducers {
     auto into_back(_Tr&& transducer, _InRa&& input)
     {
         output_type col;
-        into(std::forward<_Tr>(transducer), std::forward<_InRa>(input),
-            std::back_inserter(col));
+        into(std::forward<_InRa>(input),
+            std::back_inserter(col), std::forward<_Tr>(transducer));
         return col;
     }
 
@@ -18,8 +18,8 @@ namespace transducers {
     stored_argument_t<output_type> into_back(_Tr&& transducer, _InRa&& input, output_type&& output)
     {
         stored_argument_t<output_type> result(std::forward<output_type>(output));
-        into(std::forward<_Tr>(transducer), std::forward<_InRa>(input),
-            std::back_inserter(output));
+        into(std::forward<_InRa>(input),
+            std::back_inserter(output), std::forward<_Tr>(transducer));
         return result;
     }
 }

@@ -24,7 +24,7 @@ namespace unit_tests
 		{
             std::vector<int> input{ 1,2,3,4,5 };
             auto selecting_odds = filtering([](int x) { return x % 2 == 1; });
-            input.erase(into(selecting_odds, input, input.begin()), input.end());
+            input.erase(into(input, input.begin(), selecting_odds), input.end());
 
             std::vector<int> expected { 1,3,5 };
             Assert::AreEqual(expected, input, L"Evens erased");
