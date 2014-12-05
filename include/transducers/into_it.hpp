@@ -11,9 +11,8 @@ namespace transducers {
             template<typename _In, typename _EsHa>
             _It step(_It iterator, _In&& input, _EsHa & hatch) const
             {
-                *iterator = input;
-                ++iterator;
-                return iterator;
+                *iterator = std::forward<_In>(input);
+                return ++iterator;
             }
 
             _It complete(_It iterator) const
