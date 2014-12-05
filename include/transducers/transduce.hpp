@@ -9,7 +9,7 @@
 
 namespace transducers {
 
-    template<typename _It, typename _Rf, typename _Out, typename _EsHa>
+    template<typename _It, typename _Out, typename _Rf, typename _EsHa>
     auto reduce(_It _begin, _It _end, _Out result, _Rf & rf, _EsHa eh)
     {
         for (auto it = _begin; it != _end; it++)
