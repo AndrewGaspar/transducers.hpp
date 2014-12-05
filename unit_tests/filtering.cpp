@@ -8,7 +8,7 @@
 #include <transducers\filtering.hpp>
 #include <transducers\mapping.hpp>
 #include <transducers\compose.hpp>
-#include <transducers\into_it.hpp>
+#include <transducers\into.hpp>
 #include <transducers\into_vector.hpp>
 
 using namespace transducers;
@@ -24,7 +24,7 @@ namespace unit_tests
 		{
             std::vector<int> input{ 1,2,3,4,5 };
             auto selecting_odds = filtering([](int x) { return x % 2 == 1; });
-            input.erase(into_it(selecting_odds, input, input.begin()), input.end());
+            input.erase(into(selecting_odds, input, input.begin()), input.end());
 
             std::vector<int> expected { 1,3,5 };
             Assert::AreEqual(expected, input, L"Evens erased");
