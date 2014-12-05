@@ -9,13 +9,15 @@
 
 namespace transducers {
 
-    template<typename _It, typename _Out, typename _Rf, typename _EsHa = nonatomic_escape_hatch>
-    auto reduce(_It _begin, _It _end, _Out result, _Rf & rf, _EsHa eh = nonatomic_escape_hatch())
+    template<typename _It, typename _Out, typename _Rf>
+    auto reduce(_It _begin, _It _end, _Out result, _Rf & rf)
     {
+        nonatomic_escape_hatch hatch;
+
         for (auto it = _begin; it != _end; it++)
         {
-            result = rf.step(result, *it, eh);
-            if (eh.should_terminate())
+            result = rf.step(result, *it, hatch);
+            if (hatch.should_terminate())
             {
                 break;
             }
@@ -24,44 +26,44 @@ namespace transducers {
         return rf.complete(result);
     }
 
-    template<typename _It, typename _Rf, typename _EsHa = nonatomic_escape_hatch>
-    auto reduce(_It _begin, _It _end, _Rf & rf, _EsHa eh = nonatomic_escape_hatch())
+    template<typename _It, typename _Rf>
+    auto reduce(_It _begin, _It _end, _Rf & rf)
     {
-        return reduce(_begin, _end, rf.init(), rf, std::move(eh));
+        return reduce(_begin, _end, rf.init(), rf);
     }
 
-    template<typename _It, typename _Tr, typename _Re, typename _Out, typename _EsHa = nonatomic_escape_hatch>
-    auto transduce(_It _begin, _It _end, _Out&& initial, _Tr const & transducer, _Re&& reducer, _EsHa hatch = nonatomic_escape_hatch())
+    template<typename _It, typename _Tr, typename _Re, typename _Out>
+    auto transduce(_It _begin, _It _end, _Out initial, _Tr const & transducer, _Re&& reducer)
     {
         auto rf = transducer.apply(std::forward<_Re>(reducer));
 
-        return reduce(_begin, _end, std::forward<_Out>(initial), rf, std::move(hatch));
+        return reduce(_begin, _end, initial, rf);
     }
 
-    template<typename _InRa, typename _Out, typename _Tr, typename _Re,  typename _EsHa = nonatomic_escape_hatch(), REQUIRES(std::is_rvalue_reference<_InRa>::value)>
-    auto transduce(_InRa&& input, _Out&& initial, _Tr const & transducer, _Re&& reducer, _EsHa hatch = nonatomic_escape_hatch())
+    template<typename _InRa, typename _Out, typename _Tr, typename _Re, REQUIRES(std::is_rvalue_reference<_InRa>::value)>
+    auto transduce(_InRa&& input, _Out initial, _Tr const & transducer, _Re&& reducer)
     {
-        return transduce(std::make_move_iterator(std::begin(input)),
-            std::make_move_iterator(std::end(input)), std::forward<_Out>(initial), transducer,
-            std::forward<_Re>(reducer), std::move(hatch));
+        return transduce(
+            std::make_move_iterator(std::begin(input)),
+            std::make_move_iterator(std::end(input)), initial, transducer,
+            std::forward<_Re>(reducer));
     }
 
-    template<typename _InRa, typename _Out, typename _Tr, typename _Re, typename _EsHa = nonatomic_escape_hatch()>
-    auto transduce(_InRa& input, _Out&& initial, _Tr const & transducer, _Re&& reducer, _EsHa hatch = nonatomic_escape_hatch())
+    template<typename _InRa, typename _Out, typename _Tr, typename _Re>
+    auto transduce(_InRa& input, _Out initial, _Tr const & transducer, _Re&& reducer)
     {
-        return transduce(std::begin(input), std::end(input), std::forward<_Out>(initial), transducer,
-            std::forward<_Re>(reducer), std::move(hatch));
+        return transduce(std::begin(input), std::end(input), initial, transducer, std::forward<_Re>(reducer));
     }
 
-    template<typename _It, typename _Tr, typename _Re, typename _EsHa = nonatomic_escape_hatch>
-    auto transduce(_It _begin, _It _end, _Tr const & transducer, _Re&& reducer, _EsHa hatch = nonatomic_escape_hatch())
+    template<typename _It, typename _Tr, typename _Re>
+    auto transduce(_It _begin, _It _end, _Tr const & transducer, _Re&& reducer)
     {
-        return transduce(_begin, _end, reducer.init(), transducer, std::forward<_Re>(reducer), std::move(hatch));
+        return transduce(_begin, _end, reducer.init(), transducer, std::forward<_Re>(reducer));
     }
 
-    template<typename _InRa, typename _Tr, typename _Red, typename _EsHa = nonatomic_escape_hatch>
-    auto transduce(_InRa&& input, _Tr const & transducer, _Red&& reducer, _EsHa hatch = nonatomic_escape_hatch())
+    template<typename _InRa, typename _Tr, typename _Red>
+    auto transduce(_InRa&& input, _Tr const & transducer, _Red&& reducer)
     {
-        return transduce(std::forward<_InRa>(input), reducer.init(), transducer, std::forward<_Red>(reducer), std::move(hatch));
+        return transduce(std::forward<_InRa>(input), reducer.init(), transducer, std::forward<_Red>(reducer));
     }
 }

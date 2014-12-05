@@ -31,6 +31,6 @@ namespace transducers {
     template<typename _Tr, typename _Ra, typename _Os>
     auto output_to(_Tr&& transducer, _Os & output_stream, _Ra&& input)
     {
-        return transduce(std::forward<_Ra>(input), std::reference_wrapper<_Os>(output_stream), std::forward<_Tr>(transducer), details::StreamReducer<_Os>(), nonatomic_escape_hatch());
+        return transduce(std::forward<_Ra>(input), std::reference_wrapper<_Os>(output_stream), std::forward<_Tr>(transducer), details::StreamReducer<_Os>());
     }
 };

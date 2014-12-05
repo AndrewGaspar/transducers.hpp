@@ -26,9 +26,8 @@ namespace unit_tests
 		{
             std::vector<int> input{ 1,2,3,4,5 };
             auto odd_numbers =
-                transducers::into_back<std::list<int>>(
-                    filtering([](int x) { return x % 2 == 1; }),
-                    input
+                transducers::into_back<std::list<int>>(input,
+                    filtering([](int x) { return x % 2 == 1; })
                 );
 
             std::list<int> odd{ 1,3,5 };

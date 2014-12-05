@@ -20,6 +20,6 @@ namespace transducers {
         using vector_output_type = typename nth_type<output_typelist, 0>::type;
         using vector_type = std::vector<vector_output_type>;
 
-        return into_back<vector_type>(std::forward<transducer_t>(transducer), std::forward<_InRa>(input));
+        return into_back<vector_type>(std::forward<_InRa>(input), std::forward<transducer_t>(transducer));
     }
 }
