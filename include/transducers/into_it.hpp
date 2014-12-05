@@ -26,10 +26,10 @@ namespace transducers {
     _It into_it(_Tr&& transducer, _InRa&& input, _It output_iterator)
     {
         return transduce(
+            std::forward<_InRa>(input),
             std::forward<_Tr>(transducer),
             details::IteratorReducer<_It>(),
             output_iterator,
-            std::forward<_InRa>(input),
             nonatomic_escape_hatch());
     }
 

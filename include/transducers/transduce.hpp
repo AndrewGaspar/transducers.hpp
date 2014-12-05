@@ -24,17 +24,17 @@ namespace transducers {
         return rf.complete(result);
     }
 
-    template<typename _Tr, typename _Red, typename _Out, typename _InRa, typename _EsHa>
-    auto transduce(_Tr const & transducer, _Red&& reducer, _Out&& result, _InRa&& input, _EsHa&& hatch)
+    template<typename _InRa, typename _Tr, typename _Red, typename _Out,  typename _EsHa>
+    auto transduce(_InRa&& input, _Tr const & transducer, _Red&& reducer, _Out&& result, _EsHa&& hatch)
     {
         auto rf = transducer.apply(std::forward<_Red>(reducer));
         
         return reduce(input.begin(), input.end(), std::forward<_Out>(result), rf, std::forward<_EsHa>(hatch));
     }
 
-    template<typename _Tr, typename _Red, typename _InRa, typename _EsHa = nonatomic_escape_hatch>
-    auto transduce(_Tr const & transducer, _Red&& reducer, _InRa&& input, _EsHa hatch = nonatomic_escape_hatch())
+    template<typename _InRa, typename _Tr, typename _Red, typename _EsHa = nonatomic_escape_hatch>
+    auto transduce(_InRa&& input, _Tr const & transducer, _Red&& reducer, _EsHa hatch = nonatomic_escape_hatch())
     {
-        return transduce(transducer, std::forward<_Red>(reducer), reducer.init(), std::forward<_InRa>(input), std::move(hatch));
+        return transduce(std::forward<_InRa>(input), transducer, std::forward<_Red>(reducer), reducer.init(), std::move(hatch));
     }
 }
