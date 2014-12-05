@@ -222,7 +222,6 @@
     <ClInclude Include="include\transducers\transduce.hpp" />
     <ClInclude Include="include\transducers\type_traits.hpp" />
     <ClInclude Include="include\transducers\into_back.hpp" />
-    <ClInclude Include="include\transducers\inplace_reduction.hpp" />
     <ClInclude Include="include\transducers\output_to_string.hpp" />
     <ClInclude Include="include\transducers\typelist.hpp" />
   </ItemGroup>
