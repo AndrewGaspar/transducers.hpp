@@ -3,6 +3,7 @@
 #include "transducers/base_reducing_function.hpp"
 #include "transducers/escape_hatch.hpp"
 #include "transducers/typelist.hpp"
+#include "transducers/reduction_wrapper.hpp"
 
 namespace transducers {
     namespace details {
@@ -14,11 +15,11 @@ namespace transducers {
         public:
             BookendReducingFunction(_BooT const & bookend, _Rf&& rf) : m_bookend(bookend), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
-            template<typename _Red, typename _Input, typename _EsHa>
-            _Red step(_Red r, _Input&& i, _EsHa & reduced)
+            template<typename _Red, typename _Input>
+            auto step(_Red r, _Input&& i)
             {
-                auto&& reduction = toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), std::forward<_Input>(i), reduced);
-                has_seen_completion = reduced.should_terminate();
+                auto&& reduction = toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), std::forward<_Input>(i));
+                has_seen_completion = transducers::is_reduced(reduction);
                 return reduction;
             }
 
@@ -30,10 +31,8 @@ namespace transducers {
                     return toolbox::base_reducing_function<_Rf>::m_rf.complete(std::forward<_Red>(r));
                 }
 
-                nonatomic_escape_hatch temporary;
-
                 return toolbox::base_reducing_function<_Rf>::m_rf.complete(
-                    toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), m_bookend, temporary)
+                    toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), m_bookend)
                 );
             }
         };

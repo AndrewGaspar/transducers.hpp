@@ -14,13 +14,14 @@ namespace transducers {
 
             FilterReductionFunction(FilteringFunction const & f, _Rf&& rf) : f(f), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
-            template<typename Reduction, typename Input, typename _EsHa>
-            Reduction step(Reduction r, Input&& i, _EsHa & reduced)
+            template<typename Reduction, typename Input>
+            Reduction step(Reduction r, Input&& i)
             {
                 static_assert(std::is_convertible<decltype(f(i)), bool>::value, "f(i) must produce a type convertible to bool in filtering transducers.");
 
-                return f(std::forward<Input>(i)) ? toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<Reduction>(r), std::forward<Input>(i), reduced)
-                            : std::forward<Reduction>(r);
+                return f(i) 
+                    ? toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<Reduction>(r), std::forward<Input>(i))
+                    : std::forward<Reduction>(r);
             }
         };
 

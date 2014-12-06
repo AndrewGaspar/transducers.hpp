@@ -1,6 +1,7 @@
 #pragma once
 
 #include "transducers\transduce.hpp"
+#include "transducers\reduction_wrapper.hpp"
 
 namespace transducers {
     namespace details {
@@ -8,16 +9,18 @@ namespace transducers {
         class IteratorReducer
         {
         public:
-            template<typename _In, typename _EsHa>
-            _It step(_It iterator, _In&& input, _EsHa & hatch) const
+            template<typename _Re, typename _In>
+            _Re step(_Re _it, _In&& input) const
             {
+                auto & iterator = unwrap(_it);
                 *iterator = std::forward<_In>(input);
                 return ++iterator;
             }
 
-            _It complete(_It iterator) const
+            template<typename _Red>
+            _It complete(_Red iterator) const
             {
-                return iterator;
+                return unwrap(iterator);
             }
         };
     }

@@ -14,10 +14,10 @@ namespace transducers {
         public:
             MappingReductionFunction(_MapFu const & f, _Rf&& rf) : f(f), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
-            template<typename Reduction, typename Input, typename _EsHa>
-            Reduction step(Reduction r, Input&& i, _EsHa & reduced) const
+            template<typename Reduction, typename Input>
+            Reduction step(Reduction r, Input&& i) const
             {
-                return toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<Reduction>(r), f(std::forward<Input>(i)), reduced);
+                return toolbox::base_reducing_function<_Rf>::m_rf.step(std::move(r), f(std::forward<Input>(i)));
             }
         };
 

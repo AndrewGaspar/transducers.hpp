@@ -216,6 +216,7 @@
     <ClInclude Include="include\transducers\interjecting.hpp" />
     <ClInclude Include="include\transducers\into.hpp" />
     <ClInclude Include="include\transducers\into_vector.hpp" />
+    <ClInclude Include="include\transducers\reduction_wrapper.hpp" />
     <ClInclude Include="include\transducers\mapping.hpp" />
     <ClInclude Include="include\transducers\output.hpp" />
     <ClInclude Include="include\transducers\reducer.hpp" />

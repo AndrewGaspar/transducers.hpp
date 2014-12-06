@@ -1,5 +1,6 @@
 #pragma once
 
+#include "transducers/reduction_wrapper.hpp"
 #include "transducers/type_traits.hpp"
 #include "transducers/typelist.hpp"
 #include "transducers/base_reducing_function.hpp"
@@ -14,31 +15,29 @@ namespace transducers {
         public:
             InterjectionReducingFunction(_IntT const & interjection, _Rf&& rf) : m_interjection(interjection), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
-            template<typename _Red, typename _Input, typename _EsHa>
-            _Red step(_Red r, _Input&& i, _EsHa & reduced)
+            template<typename _Red, typename _Input>
+            auto step(_Red r, _Input&& i)
             {
                 if (skipped_first)
                 {
                     auto reduction = 
                         toolbox::base_reducing_function<_Rf>
                             ::m_rf.step(
-                                std::forward<_Red>(r), 
-                                m_interjection, 
-                                reduced);
+                                r, 
+                                m_interjection);
 
-                    if (reduced.should_terminate())
+                    if (transducers::is_reduced(reduction))
                     {
                         return reduction;
                     }
 
                     return toolbox::base_reducing_function<_Rf>::m_rf.step(
-                        std::forward<_Red>(reduction), 
-                        std::forward<_Input>(i), 
-                        reduced);
+                        reduction, 
+                        std::forward<_Input>(i));
                 }
 
                 skipped_first = true;
-                return toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), std::forward<_Input>(i), reduced);
+                return toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Red>(r), std::forward<_Input>(i));
             }
         };
 

@@ -17,8 +17,8 @@ namespace transducers {
 
             _Out init() { return std::move(m_initialValue); }
 
-            template<typename _OutT, typename _InT, typename _EsHa>
-            _Out step(_OutT&& reduction, _InT&& input, _EsHa &) const
+            template<typename _OutT, typename _InT>
+            _Out step(_OutT&& reduction, _InT&& input) const
             {
                 return m_stepFunction(std::forward<_OutT>(reduction), std::forward<_InT>(input));
             }

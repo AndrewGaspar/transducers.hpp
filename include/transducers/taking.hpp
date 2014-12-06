@@ -1,6 +1,7 @@
 #pragma once
 
 #include "transducers/base_reducing_function.hpp"
+#include "transducers/reduction_wrapper.hpp"
 
 namespace transducers {
     namespace details {
@@ -9,17 +10,21 @@ namespace transducers {
         {
             size_t m_numRemaining;
         public:
+            static const bool wraps_reduction = true;
+
             TakingReducingFunction(size_t numToTake, _Rf&& rf) : m_numRemaining(numToTake), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
-            template<typename _Re, typename _In, typename _EsHa>
-            _Re step(_Re r, _In&& i, _EsHa & hatch)
+            template<typename _Re, typename _In>
+            wrapped_t<_Re> step(_Re r, _In&& i)
             {
-                auto&& reduction = toolbox::base_reducing_function<_Rf>::m_rf.step(std::forward<_Re>(r), std::forward<_In>(i), hatch);
+                wrapped_t<_Re> red(r);
+
+                auto&& reduction = toolbox::base_reducing_function<_Rf>::m_rf.step(red, std::forward<_In>(i));
                 m_numRemaining--;
 
                 if (m_numRemaining <= 0)
                 {
-                    hatch.request_termination();
+                    reduction.set_reduced();
                 }
 
                 return reduction;

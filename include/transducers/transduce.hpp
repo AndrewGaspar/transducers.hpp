@@ -6,24 +6,26 @@
 #include "transducers/type_traits.hpp"
 #include "transducers/escape_hatch.hpp"
 #include "transducers/conditional_move.hpp"
+#include "transducers/reduction_wrapper.hpp"
 
 namespace transducers {
 
     template<typename _It, typename _Out, typename _Rf>
     auto reduce(_It _begin, _It _end, _Out result, _Rf & rf)
     {
-        nonatomic_escape_hatch hatch;
+        using result_type = decltype(rf.step(result, *_begin));
+        result_type _result = result;
 
         for (auto it = _begin; it != _end; it++)
         {
-            result = rf.step(result, *it, hatch);
-            if (hatch.should_terminate())
+            _result = rf.step(_result, *it);
+            if (is_reduced(_result))
             {
                 break;
             }
         }
 
-        return rf.complete(result);
+        return rf.complete(_result);
     }
 
     template<typename _It, typename _Rf>
