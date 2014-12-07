@@ -15,7 +15,7 @@ namespace unit_tests
 		TEST_METHOD(IncrementAndDecrement)
 		{
             std::vector<int> input{ 1,2,3 };
-            auto output = into_vector(compose(incrementing, decrementing), input);
+            auto output = into_vector(input, compose(incrementing, decrementing));
             Assert::AreEqual(input, output, L"The output should match the input.");
 		}
 

@@ -37,7 +37,7 @@ namespace unit_tests
             auto selecting_non_null = filtering([](std::unique_ptr<int> & x) { return x.get(); });
             auto unwrapping = mapping([](std::unique_ptr<int>& x) { return *x; });
 
-            auto nonNull = into_vector(compose(selecting_non_null, unwrapping), std::move(ptrs));
+            auto nonNull = into_vector(std::move(ptrs), compose(selecting_non_null, unwrapping));
 
             std::vector<int> expected{ 1,3 };
             Assert::AreEqual(expected, nonNull);

@@ -15,8 +15,9 @@ namespace unit_tests
 		TEST_METHOD(VectorRValueTransducer)
 		{
             auto incremented = into_vector(
-                mapping([](int x) { return x + 1; }),
-                std::vector<int> { 2, 4, 6 });
+                std::vector<int> { 2, 4, 6 },
+                mapping([](int x) { return x + 1; })
+                );
 
             std::vector<int> expected{ 3, 5, 7 };
 
@@ -27,7 +28,7 @@ namespace unit_tests
         {
             auto incrementer = mapping([](int x) { return x + 1; });
 
-            auto incremented = into_vector(incrementer, std::vector<int> { 2, 4, 6 });
+            auto incremented = into_vector(std::vector<int> { 2, 4, 6 }, incrementer);
 
             std::vector<int> expected{ 3,5,7 };
 

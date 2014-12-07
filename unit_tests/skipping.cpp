@@ -17,7 +17,7 @@ namespace unit_tests
 		TEST_METHOD(SkipsFirst)
 		{
             std::vector<int> input{ 2,4,6 };
-            auto no_two = into_vector(skipping(1), input);
+            auto no_two = into_vector(input, skipping(1));
             std::vector<int> expected{ 4,6 };
             Assert::AreEqual(expected, no_two);
 		}
@@ -25,14 +25,14 @@ namespace unit_tests
         TEST_METHOD(SkipsNone)
         {
             std::vector<int> input{ 2,4,6 };
-            auto no_skip = into_vector(skipping(0), input);
+            auto no_skip = into_vector(input, skipping(0));
             Assert::AreEqual(input, no_skip);
         }
 
         TEST_METHOD(SkipsAll)
         {
             std::vector<int> input{ 2,4,6 };
-            auto empty = into_vector(skipping(3), input);
+            auto empty = into_vector(input, skipping(3));
             Assert::AreEqual(std::vector<int>(), empty);
         }
 	};
