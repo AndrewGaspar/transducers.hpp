@@ -226,6 +226,7 @@
     <ClInclude Include="include\transducers\into_back.hpp" />
     <ClInclude Include="include\transducers\output_to_string.hpp" />
     <ClInclude Include="include\transducers\typelist.hpp" />
+    <ClInclude Include="include\transducers\skipping.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
