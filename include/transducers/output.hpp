@@ -11,7 +11,6 @@ namespace transducers {
         template<typename _Os>
         class StreamReducer
         {
-            stored_argument_t<_Os> m_outStream;
         public:
             using ostream_type = _Os;
 
