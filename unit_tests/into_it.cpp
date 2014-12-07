@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
-
-#include "common.h"
 
 #include <vector>
 #include <iterator>

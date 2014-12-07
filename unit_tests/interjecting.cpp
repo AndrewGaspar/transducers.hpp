@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
-
-#include "common.h"
 
 #include <transducers\interjecting.hpp>
 #include <transducers\output.hpp>

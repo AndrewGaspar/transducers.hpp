@@ -1,7 +1,4 @@
 #include "stdafx.h"
-#include <CppUnitTest.h>
-
-#include "tostring_overloads.h"
 
 #include <transducers\mapping.hpp>
 #include <transducers\into_vector.hpp>

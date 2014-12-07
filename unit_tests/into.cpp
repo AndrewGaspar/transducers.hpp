@@ -1,5 +1,4 @@
 #include "stdafx.h"
-#include "CppUnitTest.h"
 
 #include <vector>
 #include <list>
@@ -9,8 +8,6 @@
 #include <transducers\into_vector.hpp>
 #include <transducers\filtering.hpp>
 #include <transducers\mapping.hpp>
-
-#include "tostring_overloads.h"
 
 using namespace transducers;
 
