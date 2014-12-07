@@ -7,6 +7,21 @@
 #include "transducers/typelist.hpp"
 
 namespace transducers {
+    template<typename _InIt, typename _Tr>
+    auto into_vector(_InIt beg, _InIt end, _Tr&& transducer)
+    {
+        using transducer_type = typename std::remove_reference<_Tr>::type;
+        using input_type = decltype(*beg);
+        using output_typelist = typename transducer_type::template output_typelist<typelist<input_type>>;
+
+        static_assert(output_typelist::length == 1, "The transducer can only output a single type to get vector output type deduction.");
+
+        using vector_output_type = typename nth_type<output_typelist, 0>::type;
+        using vector_type = std::vector<vector_output_type>;
+
+        return into_back<vector_type>(beg, end, std::forward<_Tr>(transducer));
+    }
+
     template<typename _InRa, typename _Tr>
     auto into_vector(_InRa&& input, _Tr&& transducer)
     {
