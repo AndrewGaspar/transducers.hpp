@@ -160,6 +160,7 @@
     <ClCompile Include="compose.cpp" />
     <ClCompile Include="ending.cpp" />
     <ClCompile Include="filtering.cpp" />
+    <ClCompile Include="inserting_after_each.cpp" />
     <ClCompile Include="interjecting.cpp" />
     <ClCompile Include="into.cpp" />
     <ClCompile Include="into_it.cpp" />
