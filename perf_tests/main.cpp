@@ -3,6 +3,8 @@
 #include <iostream>
 #include <functional>
 #include <sstream>
+#include <algorithm>
+#include <numeric>
 
 #include <transducers\transduce.hpp>
 #include <transducers\mapping.hpp>
@@ -64,18 +66,18 @@ struct ModuloFilter
     }
 };
 
-auto hashing = mapping(Hashes());
-auto hashing_filtering = compose(hashing, filtering(ModuloFilter<128>()));
+static const auto hashing = mapping(Hashes());
+static const auto hashing_filtering = compose(hashing, filtering(ModuloFilter<128>()));
 
-auto summer = reducer(size_t(0), [](size_t acc, size_t x) { return acc + x; });
+static const auto accumulater = reducer([](size_t acc, size_t x) { return acc + x; });
 
 size_t func1()
 {
-    auto my_range = range<size_t>(0, size_t(1e9));
+    auto my_range = range<size_t>(0, size_t(1e8));
     return transduce(
-        my_range.begin(), my_range.end(), 
+        my_range.begin(), my_range.end(), 0,
         hashing_filtering,
-        summer);
+        accumulater);
 }
 
 size_t func2()
@@ -83,7 +85,7 @@ size_t func2()
     std::hash<size_t> size_t_hash;
 
     size_t acc = 0;
-    for (auto const & x : range<size_t>(0, size_t(1e9)))
+    for (auto const & x : range<size_t>(0, size_t(1e8)))
     {
         auto my_hash = size_t_hash(x);
         if (my_hash % size_t(128) == 0)
@@ -91,8 +93,25 @@ size_t func2()
             acc += my_hash;
         }
     }
-
     return acc;
+}
+
+size_t func3()
+{
+    std::hash<size_t> size_t_hash;
+
+    auto my_range = range<size_t>(0, size_t(1e8));
+
+    std::vector<size_t> hashes;
+    std::transform(my_range.begin(), my_range.end(), std::back_inserter(hashes), [&size_t_hash](size_t input) {
+        return size_t_hash(input);
+    });
+
+    auto end = std::remove_if(hashes.begin(), hashes.end(), [](size_t input) {
+        return !(input % 128);
+    });
+
+    return std::accumulate(hashes.begin(), end, 0);
 }
 
 int main(int count, char** args)
@@ -101,7 +120,7 @@ int main(int count, char** args)
     
     using size_t_function = std::function<size_t(void)>;
 
-    std::vector<size_t_function> funcs { func1, func2 };
+    std::vector<size_t_function> funcs { func1, func2, func3 };
 
     output_to(
         compose(

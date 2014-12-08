@@ -15,8 +15,8 @@ namespace unit_tests
 		TEST_METHOD(Sum)
 		{
             std::vector<int> input{ 1,2,3 };
-            auto sum = reduce(input.begin(), input.end(),
-                reducer(0, [](int acc, int val) { return acc + val; }));
+            auto sum = reduce(input.begin(), input.end(), 0,
+                reducer([](int acc, int val) { return acc + val; }));
             Assert::AreEqual(6, sum, L"Sum of inputs should be 6.");
 		}
 

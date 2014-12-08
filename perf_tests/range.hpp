@@ -31,10 +31,23 @@ public:
         return *this;
     }
 
+    RangeIterator & operator--()
+    {
+        --m_value;
+        return *this;
+    }
+
     RangeIterator operator++(int)
     {
         RangeIterator copy(*this);
         ++(*this);
+        return copy;
+    }
+
+    RangeIterator operator--(int)
+    {
+        RangeIterator copy(*this);
+        --(*this);
         return copy;
     }
 };
