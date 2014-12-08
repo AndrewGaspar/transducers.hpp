@@ -36,7 +36,7 @@ namespace unit_tests
         {
             std::vector<int> input{ -5,-3,-1,1,3,5 };
             auto halving = mapping([](int x) { return float(x) / 2.0f; });
-            auto halved = into_vector(input, halving);
+            auto halved = into_vector(input.begin(), input.end(), halving);
 
             std::vector<float> expected{ -2.5f, -1.5f, -0.5f, 0.5f, 1.5f, 2.5f };
 

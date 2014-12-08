@@ -38,7 +38,7 @@ namespace transducers {
     template<typename _InIt, typename _OutIt, typename _Tr>
     _OutIt into(_InIt _begin, _InIt _end, _OutIt out_begin, _Tr const & transducer)
     {
-        return transduce(_begin, _end, out_begin, transducer, details::IteratorReducer<_It>());
+        return transduce(_begin, _end, out_begin, transducer, details::IteratorReducer<_OutIt>());
     }
 
 }
