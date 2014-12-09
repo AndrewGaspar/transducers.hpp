@@ -12,7 +12,7 @@ namespace transducers {
             stored_argument_t<_ChildRf> m_rf;
         public:
             template<typename _Re>
-            using reduction_type = typename std::conditional<wraps_reduction<_Re>::value, reduction_wrapper<_Re>, _Re>::type;
+            using return_type = typename std::conditional<wraps_reduction<_Re>::value, reduction_wrapper<_Re>, _Re>::type;
 
             base_reducing_function(_ChildRf&& rf) : m_rf(std::move(rf)) {}
 
