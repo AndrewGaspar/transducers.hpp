@@ -42,15 +42,6 @@ namespace transducers {
         return reduce(_begin, _end, initial, rf);
     }
 
-    template<typename _InRa, typename _Out, typename _Tr, typename _Re, REQUIRES(std::is_rvalue_reference<_InRa>::value)>
-    auto transduce(_InRa&& input, _Out initial, _Tr const & transducer, _Re&& reducer)
-    {
-        return transduce(
-            std::make_move_iterator(std::begin(input)),
-            std::make_move_iterator(std::end(input)), initial, transducer,
-            std::forward<_Re>(reducer));
-    }
-
     template<typename _InRa, typename _Out, typename _Tr, typename _Re>
     auto transduce(_InRa& input, _Out initial, _Tr const & transducer, _Re&& reducer)
     {

@@ -157,6 +157,7 @@
     <ClInclude Include="tostring_overloads.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="beginning.cpp" />
     <ClCompile Include="compose.cpp" />
     <ClCompile Include="ending.cpp" />
     <ClCompile Include="filtering.cpp" />

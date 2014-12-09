@@ -206,6 +206,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="include\transducers\beginning.hpp" />
     <ClInclude Include="include\transducers\inserting_after_each.hpp" />
     <ClInclude Include="include\transducers\atomic_escape_hatch.hpp" />
     <ClInclude Include="include\transducers\base_reducing_function.hpp" />

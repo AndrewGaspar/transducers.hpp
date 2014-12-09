@@ -18,7 +18,7 @@ namespace transducers {
             using result_type = decltype(std::declval<stored_rf>().step(std::declval<_Red>(), std::declval<_Input>()));
 
             template<typename _Re>
-            using reduction_type = typename std::conditional<wraps_reduction<_Re>::value, reduction_wrapper<_Re>, _Re>::type;
+            using return_type = typename std::conditional<wraps_reduction<_Re>::value, reduction_wrapper<_Re>, _Re>::type;
 
             base_reducing_function(_ChildRf&& rf) : m_rf(std::move(rf)) {}
 
