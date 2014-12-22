@@ -1,34 +1,32 @@
 #pragma once
 
 #include "transducers\reduction_wrapper.hpp"
+#include "transducers\helpers\tuple_helpers.hpp"
 
 #include <tuple>
 
 namespace transducers {
     namespace details {
-        // http://stackoverflow.com/questions/16868129/how-to-store-variadic-template-arguments
-        template <int... Is>
-        struct index {};
-
-        template <int N, int... Is>
-        struct gen_seq : gen_seq<N - 1, N - 1, Is...> {};
-
-        template <int... Is>
-        struct gen_seq<0, Is...> : index<Is...>{};
-
-
+        
         template<typename Rdr>
-        class ReceivingReducer
+        class BaseReceivingReducer
         {
             Rdr & m_reducer;
         public:
-            ReceivingReducer(Rdr & reducer) : m_reducer(reducer) {}
+            BaseReceivingReducer(Rdr & reducer) : m_reducer(reducer) {}
 
             template<typename Re, typename In>
             auto step(Re reduction, In&& input)
             {
                 return m_reducer.step(reduction, std::forward<In>(input));
             }
+        };
+
+        template<typename Rdr>
+        class ReceivingReducer : public BaseReceivingReducer<Rdr>
+        {
+        public:
+            ReceivingReducer(Rdr & reducer) : BaseReceivingReducer<Rdr>(reducer) {}
 
             template<typename Re>
             auto complete(Re)
@@ -50,10 +48,10 @@ namespace transducers {
         };
 
         template<typename Rdr>
-        class FinalReceivingReducer : public ReceivingReducer<Rdr>
+        class FinalReceivingReducer : public BaseReceivingReducer<Rdr>
         {
         public:
-            FinalReceivingReducer(Rdr & reducer) : ReceivingReducer<Rdr>(reducer) {}
+            FinalReceivingReducer(Rdr & reducer) : BaseReceivingReducer<Rdr>(reducer) {}
 
             template<typename Re>
             auto complete(Re reduction)
@@ -74,7 +72,7 @@ namespace transducers {
             }
 
             template<typename Re, typename In, typename Rdr, typename... Rdrs>
-            auto _step(Re reduction, In&& input, Rdr & reducer, Rdrs&... rest)
+            auto recursive_step(Re reduction, In&& input, Rdr & reducer, Rdrs&... rest)
             {
                 // do not forward input to step function because it can't
                 // be consumed until the final reducer gets its hands on it
@@ -84,25 +82,43 @@ namespace transducers {
                     return reduced;
                 }
 
-                return _step(reduction, std::forward<In>(input), rest...);
+                return recursive_step(reduction, std::forward<In>(input), rest...);
             }
 
-            template<typename Re, typename In, typename ...Rdrs>
+            template<typename Re, typename In, typename... Rdrs, std::size_t... Is>
+            auto _step(Re reduction, In&& input, std::tuple<Rdrs...>& reducers, helpers::index<Is...>)
+            {
+                return recursive_step(re, std::forward<In>(input), std::get<Is>(reducers)...);
+            }
+
+            template<typename Re, typename In, typename... Rdrs>
             auto _step(Re reduction, In&& input, std::tuple<Rdrs...>& reducers)
             {
-
+                return _step(reduction, std::forward<In>(input), reducers, helpers::gen_seq<sizeof...(Rdrs)>{});
             }
 
             template<typename Re, typename Rdr>
-            auto _complete(Re reduction, Rdr& reducer)
+            auto recursive_complete(Re reduction, Rdr & reducer)
             {
                 return reducer.complete(reduction);
             }
 
             template<typename Re, typename Rdr, typename... Rdrs>
-            auto _complete(Re reduction, Rdr& reducer, Rdrs&... reducers)
+            auto recursive_complete(Re reduction, Rdr & reducer, Rdrs & ... reducers)
             {
-                return _complete(reducer.complete(reduction), reducers...);
+                return recursive_complete(reducer.complete(reduction), reducers...);
+            }
+
+            template<typename Re, typename... Rdrs, std::size_t... Is>
+            auto _complete(Re reduction, std::tuple<Rdrs...> & reducers, helpers::index<Is...>)
+            {
+                return recursive_complete(reduction, std::get<Is>(reducers)...);
+            }
+
+            template<typename Re, typename... Rdrs>
+            auto _complete(Re reduction, std::tuple<Rdrs...> & reducers)
+            {
+                return _complete(reduction, reducers, helpers::gen_seq<sizeof...(Rdrs)>{});
             }
         public:
             template<typename ...Args>
