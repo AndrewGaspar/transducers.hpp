@@ -69,6 +69,7 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="perf_test.hpp" />
     <ClInclude Include="range.hpp" />
     <ClInclude Include="repeats.hpp" />
   </ItemGroup>
