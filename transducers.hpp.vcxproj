@@ -222,6 +222,7 @@
     <ClInclude Include="include\transducers\mapping.hpp" />
     <ClInclude Include="include\transducers\output.hpp" />
     <ClInclude Include="include\transducers\reducer.hpp" />
+    <ClInclude Include="include\transducers\sorting.hpp" />
     <ClInclude Include="include\transducers\taking.hpp" />
     <ClInclude Include="include\transducers\transduce.hpp" />
     <ClInclude Include="include\transducers\type_traits.hpp" />
