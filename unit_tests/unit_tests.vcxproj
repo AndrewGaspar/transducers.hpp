@@ -168,6 +168,7 @@
     <ClCompile Include="reducer.cpp" />
     <ClCompile Include="reduction_wrapper.cpp" />
     <ClCompile Include="skipping.cpp" />
+    <ClCompile Include="sorting.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
