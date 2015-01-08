@@ -1,5 +1,7 @@
 #pragma once
 
+#include <type_traits>
+
 #include "transducers/type_traits.hpp"
 #include "transducers/reduction_wrapper.hpp"
 
@@ -9,8 +11,12 @@ namespace transducers {
         class base_reducing_function
         {
         protected:
-            stored_argument_t<_ChildRf> m_rf;
+            using stored_rf = stored_argument_t<_ChildRf>;
+            stored_rf m_rf;
         public:
+            template<typename _Red, typename _Input>
+            using result_type = decltype(std::declval<stored_rf>().step(std::declval<_Red>(), std::declval<_Input>()));
+
             template<typename _Re>
             using return_type = typename std::conditional<wraps_reduction<_Re>::value, reduction_wrapper<_Re>, _Re>::type;
 

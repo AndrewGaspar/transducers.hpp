@@ -15,7 +15,7 @@ namespace transducers {
             SkippingReducingFunction(size_t numToTake, _Rf&& rf) : m_numRemaining(numToTake), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename _Re, typename _In>
-            auto step(_Re r, _In&& i)
+            auto step(_Re r, _In&& i) -> result_type<_Re, _In>
             {
                 if (m_numRemaining > 0)
                 {
