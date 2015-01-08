@@ -9,50 +9,50 @@
 #include <transducers\into.hpp>
 #include <transducers\mapping.hpp>
 
-template<typename _Out>
-class test_function
+class virtual_test_function
 {
     std::string m_title;
-    std::function<_Out(void)> m_test;
 public:
-    test_function(std::string title, std::function<_Out(void)> test) : 
-        m_title(std::move(title)), 
-        m_test(std::move(test)) 
-    {
-    }
-
-    std::pair<_Out, std::chrono::milliseconds> execute_and_time() const
-    {
-        auto start = std::chrono::high_resolution_clock::now();
-        auto result = m_test();
-        auto time = std::chrono::high_resolution_clock::now() - start;
-        return { result, std::chrono::duration_cast<std::chrono::milliseconds>(time) };
-    }
+    virtual_test_function(std::string title) : m_title(std::move(title)) {}
+    virtual ~virtual_test_function() = default;
 
     std::string const & title() const
     {
         return m_title;
     }
+
+    virtual std::chrono::high_resolution_clock::duration time_function() const = 0;
 };
 
 template<typename _Out>
+class test_function : public virtual_test_function
+{
+    std::function<_Out(void)> m_test;
+public:
+    test_function(std::string title, std::function<_Out(void)> test) : 
+        virtual_test_function(std::move(title)),
+        m_test(std::move(test)) 
+    {
+    }
+
+    virtual std::chrono::high_resolution_clock::duration time_function() const
+    {
+        auto start = std::chrono::high_resolution_clock::now();
+        auto result = m_test();
+        return std::chrono::high_resolution_clock::now() - start;
+    }
+};
+
 class perf_test
 {
     std::string m_title;
     std::string m_description;
-    std::vector<test_function<_Out>> m_tests;
+protected:
+    std::vector<std::unique_ptr<virtual_test_function>> m_tests;
 public:
     perf_test(std::string title, std::string description) : 
         m_title(std::move(title)), 
         m_description(std::move(description)) 
-    {
-    }
-
-    perf_test(std::string title, std::string description,
-        std::initializer_list<test_function<_Out>> tests) :
-        m_title(std::move(title)),
-        m_description(std::move(description)),
-        m_tests(tests)
     {
     }
 
@@ -66,23 +66,23 @@ public:
         return m_description;
     }
 
-    std::vector<test_function<_Out>> const & tests() const
+    std::vector<std::unique_ptr<virtual_test_function>> const & tests() const
     {
         return m_tests;
     }
+};
 
-    void add_test(std::string title, std::function<_Out(void)> test)
+template<typename _Out>
+class a_perf_test : public perf_test
+{
+public:
+    a_perf_test(std::string title, std::string description,
+        std::initializer_list<test_function<_Out>> tests) :
+        perf_test(std::move(title), std::move(description))
     {
-        m_tests.emplace_back(std::move(title), std::move(test));
-    }
-
-    void add_test(test_function<_Out> const & test)
-    {
-        m_tests.emplace_back(test);
-    }
-
-    void add_tests(std::initializer_list<test_function<_Out>> const & tests)
-    {
-        m_tests.insert(m_tests.back(), tests);
+        for (auto & test : tests)
+        {
+            m_tests.push_back(std::make_unique<test_function<_Out>>(test));
+        }
     }
 };

@@ -48,42 +48,33 @@ public:
     }
 };
 
-template<size_t mod>
-struct ModuloFilter
-{
-    template<typename T>
-    constexpr bool operator()(T input) const
-    {
-        return !(input % mod);
-    }
-};
-
-static const auto hashing = mapping(std::hash<size_t>());
-static const auto hashing_filtering = compose(hashing, filtering(ModuloFilter<128>()));
-
+static const auto hashing = mapping(std::hash<uint32_t>());
 static const auto accumulater = reducer([](size_t acc, size_t x) { return acc + x; });
 
 int main(int count, char** args)
 {
     std::vector<std::string> arguments(args, args + count);
 
-    perf_test<size_t> hashing_tests{
+    a_perf_test<size_t> hashing_tests{
         "HashingFiltering",
         "Each test iterates through a lazily evaluated range of numbers, hashes them, filters out those"
         "divisible by 128, and sums them.",
         {
             {"transducers", []() {
-                auto my_range = range<size_t>(0, size_t(1e9));
+                auto my_range = range<uint32_t>(0, 1000000000);
                 return transduce(
                     my_range.begin(), my_range.end(), 0,
-                    compose(hashing, filtering(ModuloFilter<128>())),
+                    compose(
+                        hashing, 
+                        filtering([](size_t x) { return !(x % 128); })
+                    ),
                     accumulater);
             }},
             {"for-loop", []() {
-                std::hash<size_t> size_t_hash;
+                std::hash<uint32_t> size_t_hash;
 
                 size_t acc = 0;
-                for (auto const & x : range<size_t>(0, size_t(1e9)))
+                for (auto const & x : range<uint32_t>(0, 1000000000))
                 {
                     auto my_hash = size_t_hash(x);
                     if (my_hash % 128 == 0)
@@ -101,11 +92,14 @@ int main(int count, char** args)
 
     output_to(
         compose(
-            mapping([](perf_test<size_t> const & perfTest) {
+            mapping([](a_perf_test<size_t> const & perfTest) {
                 return into_vector(perfTest.tests(),
-                    mapping([](test_function<size_t> const & testFunction) {
-                        return testFunction.execute_and_time().second;
-                    }));
+                    compose(
+                        mapping([](std::unique_ptr<virtual_test_function> const & testFunction) {
+                            return testFunction->time_function();
+                        }),
+                        mapping(DurationCaster<std::chrono::milliseconds>{})
+                    ));
             }),
             skipping(1),
             taking(10),

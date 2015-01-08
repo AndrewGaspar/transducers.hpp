@@ -14,7 +14,7 @@ public:
         return m_is_end;
     }
 
-    auto operator*() const
+    auto & operator*() const
     {
         return *m_me;
     }
