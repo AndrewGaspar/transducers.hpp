@@ -165,6 +165,7 @@
     <ClCompile Include="interjecting.cpp" />
     <ClCompile Include="into.cpp" />
     <ClCompile Include="into_it.cpp" />
+    <ClCompile Include="multitransducing.cpp" />
     <ClCompile Include="reducer.cpp" />
     <ClCompile Include="reduction_wrapper.cpp" />
     <ClCompile Include="skipping.cpp" />
