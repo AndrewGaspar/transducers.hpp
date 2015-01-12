@@ -4,6 +4,7 @@
 #include "transducers\helpers\tuple_helpers.hpp"
 
 #include <tuple>
+#include <memory>
 
 namespace transducers {
     namespace details {
@@ -12,9 +13,9 @@ namespace transducers {
         class BaseReceivingReducer
         {
         protected:
-            Rdr & m_reducer;
+            Rdr m_reducer;
         public:
-            BaseReceivingReducer(Rdr & reducer) : m_reducer(reducer) {}
+            BaseReceivingReducer(Rdr&& reducer) : m_reducer(std::move(reducer)) {}
 
             auto init()
             {
@@ -34,7 +35,7 @@ namespace transducers {
         class ReceivingReducer : public BaseReceivingReducer<Rdr>
         {
         public:
-            ReceivingReducer(Rdr & reducer) : BaseReceivingReducer<Rdr>(reducer) {}
+            ReceivingReducer(Rdr reducer) : BaseReceivingReducer<Rdr>(std::move(reducer)) {}
 
             template<typename Re>
             auto complete(Re&& reduction)
@@ -49,12 +50,12 @@ namespace transducers {
         class FinalReceivingReducer : public BaseReceivingReducer<Rdr>
         {
         public:
-            FinalReceivingReducer(Rdr & reducer) : BaseReceivingReducer<Rdr>(reducer) {}
+            FinalReceivingReducer(Rdr reducer) : BaseReceivingReducer<Rdr>(std::move(reducer)) {}
 
             template<typename Re>
             auto complete(Re reduction)
             {
-                return m_reducer.complete(reduction);
+                return this->m_reducer.complete(reduction);
             }
         };
 
@@ -69,18 +70,29 @@ namespace transducers {
                 return reducer.step(std::forward<Re>(reduction), std::forward<In>(input));
             }
 
-            template<typename Re, typename In, typename Rdr, typename... Rdrs>
-            auto recursive_step(Re&& reduction, In&& input, Rdr & reducer, Rdrs&... rest)
+            template<typename Re, typename In, typename Rdr, typename... Rest>
+            auto recursive_step(Re&& reduction, In&& input, Rdr & reducer, Rest&... rest)
             {
+                using first_result_type = decltype(reducer.step(reduction, input));
+                using rest_result_type = decltype(recursive_step(reduction, std::forward<In>(input), rest...));
+
+                using result_type = typename std::conditional<
+                    is_reduction_wrapper<first_result_type>::value ||
+                    is_reduction_wrapper<rest_result_type>::value,
+                    wrapped_t<first_result_type>,
+                    first_result_type>::type;
+
+                result_type _result = reduction;
+
                 // do not forward input to step function because it can't
                 // be consumed until the final reducer gets its hands on it
-                auto next_reduction = reducer.step(std::forward<Re>(reduction), input);
-                if (is_reduced(next_reduction))
+                _result = reducer.step(_result, input);
+                if (is_reduced(_result))
                 {
-                    return next_reduction;
+                    return _result;
                 }
 
-                return recursive_step(std::move(next_reduction), std::forward<In>(input), rest...);
+                return recursive_step(std::move(_result), std::forward<In>(input), rest...);
             }
 
             template<typename Re, typename In, std::size_t... Is>
@@ -101,8 +113,8 @@ namespace transducers {
                 return reducer.complete(std::forward<Re>(reduction));
             }
 
-            template<typename Re, typename Rdr, typename... Rdrs>
-            auto recursive_complete(Re&& reduction, Rdr & reducer, Rdrs & ... reducers)
+            template<typename Re, typename Rdr, typename... Rest>
+            auto recursive_complete(Re&& reduction, Rdr & reducer, Rest & ... reducers)
             {
                 return recursive_complete(reducer.complete(std::forward<Re>(reduction)), reducers...);
             }
@@ -148,46 +160,70 @@ namespace transducers {
             return MultiReducer<Rdrs...> { std::move(reducers) };
         }
 
+        template<typename Rdr>
+        class SharedReducer
+        {
+            std::shared_ptr<Rdr> m_reducer;
+        public:
+            SharedReducer(Rdr reducer) : m_reducer(std::make_shared<Rdr>(std::move(reducer))) {}
+
+            auto init() -> decltype(auto)
+            {
+                return m_reducer->init();
+            }
+
+            template<typename Re, typename In>
+            auto step(Re&& reduction, In&& input) -> decltype(auto)
+            {
+                return m_reducer->step(std::forward<Re>(reduction), std::forward<In>(input));
+            }
+
+            template<typename Re>
+            auto complete(Re&& reduction) -> decltype(auto)
+            {
+                return m_reducer->complete(std::forward<Re>(reduction));
+            }
+        };
+
         template<typename... Ts>
         class MultiTransducer
         {
             std::tuple<Ts...> m_transducers;
 
             template<typename _Rdr, typename _Tdr>
-            auto apply_reducer(_Rdr & reducer, _Tdr const & transducer) const
+            auto apply_reducer(_Rdr const & reducer, _Tdr const & transducer) const
             {
                 return std::make_tuple(transducer.apply(FinalReceivingReducer<_Rdr>(reducer)));
             }
 
             template<typename _Rdr, typename _Tr, typename... _Trs>
-            auto apply_reducer(_Rdr & reducer, _Tr const & transducer, _Trs&... transducers) const
+            auto apply_reducer(_Rdr const & reducer, _Tr const & transducer, _Trs&... transducers) const
             {
                 return std::tuple_cat(std::make_tuple(transducer.apply(ReceivingReducer<_Rdr>(reducer))), apply_reducer(reducer, transducers...));
             }
 
             template<typename _Rdr, std::size_t... _Is>
-            auto apply_reducer_to_transducers(_Rdr & reducer, helpers::index<_Is...>) const
+            auto apply_reducer_to_transducers(_Rdr const & reducer, helpers::index<_Is...>) const
             {
                 return apply_reducer(reducer, std::get<_Is>(m_transducers)...);
             }
         public:
-
             template<typename... _Ts>
-            MultiTransducer(_Ts&&... transducers) : m_transducers(std::forward<_Ts>(transducers)...)
+            MultiTransducer(_Ts&&... transducers) :
+                m_transducers(std::forward<_Ts>(transducers)...)
             {
-
             }
 
             template<typename Rdr>
-            auto apply(Rdr & reducer) const
+            auto apply(Rdr&& reducer) const
             {
-                return construct_multireducer(apply_reducer_to_transducers(reducer, helpers::gen_seq<sizeof...(Ts)>{}));
+                return construct_multireducer(apply_reducer_to_transducers(SharedReducer<Rdr>{ std::forward<Rdr>(reducer) }, helpers::gen_seq<sizeof...(Ts)>{}));
             }
         };
     }
 
     template<typename... Ts>
-    auto multitransducing(Ts... transducers)
+    auto multitransducing(Ts&&... transducers)
     {
         return details::MultiTransducer<Ts...>(std::forward<Ts>(transducers)...);
     }

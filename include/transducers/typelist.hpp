@@ -79,7 +79,7 @@ namespace transducers {
         >
         {
             using head = typename _tl::head;
-            using tail = typename remove_duplicates<typename _tl::tail>;
+            using tail = remove_duplicates<typename _tl::tail>;
             static const size_t length = tail::length + 1;
         };
 
@@ -198,7 +198,7 @@ namespace transducers {
         >
         {
             using head = typename _tr::template transform<typename _tl::head>::type;
-            using tail = typename _private_transform_typelist<typename _tl::tail, _tr>;
+            using tail = _private_transform_typelist<typename _tl::tail, _tr>;
             static const size_t length = tail::length + 1;
         };
     }

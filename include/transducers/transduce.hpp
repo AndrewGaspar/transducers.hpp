@@ -16,7 +16,7 @@ namespace transducers {
         using result_type = decltype(rf.step(result, *_begin));
         result_type _result = result;
 
-        for (auto it = _begin; it != _end; it++)
+        for (auto it = _begin; it != _end; ++it)
         {
             _result = rf.step(_result, *it);
             if (is_reduced(_result))
@@ -43,9 +43,10 @@ namespace transducers {
     }
 
     template<typename _InRa, typename _Out, typename _Tr, typename _Re>
-    auto transduce(_InRa& input, _Out initial, _Tr const & transducer, _Re&& reducer)
+    auto transduce(_InRa&& input, _Out initial, _Tr const & transducer, _Re&& reducer)
     {
-        return transduce(std::begin(input), std::end(input), initial, transducer, std::forward<_Re>(reducer));
+        stored_argument_t<_InRa> inputRange = std::forward<_InRa>(input);
+        return transduce(std::begin(inputRange), std::end(inputRange), initial, transducer, std::forward<_Re>(reducer));
     }
 
     template<typename _It, typename _Tr, typename _Re>

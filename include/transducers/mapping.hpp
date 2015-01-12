@@ -27,7 +27,7 @@ namespace transducers {
             stored_argument_t<_MapFu> _f;
         public:
             template<typename _InTyList>
-            using output_typelist = typename transform_typelist_with_functor<_InTyList, typename std::remove_reference<_MapFu>::type>;
+            using output_typelist = transform_typelist_with_functor<_InTyList, typename std::remove_reference<_MapFu>::type>;
 
             template<typename _MapFuP,
                 REQUIRES(std::is_same<_MapFu, _MapFuP>::value)>

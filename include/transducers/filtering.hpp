@@ -15,7 +15,7 @@ namespace transducers {
             FilterReductionFunction(FilteringFunction const & f, _Rf&& rf) : f(f), toolbox::base_reducing_function<_Rf>(std::move(rf)) {}
 
             template<typename Reduction, typename Input>
-            auto step(Reduction r, Input&& i) -> result_type<Reduction, Input>
+            auto step(Reduction r, Input&& i) -> typename toolbox::base_reducing_function<_Rf>::template result_type<Reduction, Input>
             {
                 static_assert(std::is_convertible<decltype(f(i)), bool>::value, "f(i) must produce a type convertible to bool in filtering transducers.");
 

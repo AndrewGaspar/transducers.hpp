@@ -17,7 +17,7 @@ public:
 
     bool operator==(RangeIterator const & ri) const
     {
-        return this.m_value == ri.m_value;
+        return this->m_value == ri.m_value;
     }
 
     bool operator!=(RangeIterator const & ri) const

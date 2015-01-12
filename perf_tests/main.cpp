@@ -8,6 +8,7 @@
 
 #include <transducers\transduce.hpp>
 #include <transducers\mapping.hpp>
+#include <transducers\multitransducing.hpp>
 #include <transducers\filtering.hpp>
 #include <transducers\compose.hpp>
 #include <transducers\taking.hpp>
@@ -48,6 +49,14 @@ public:
     }
 };
 
+template<typename duration>
+auto duration_casting()
+{
+    return mapping([](auto const & from) {
+        return std::chrono::duration_cast<duration>(from);
+    });
+}
+
 static const auto hashing = mapping(std::hash<uint32_t>());
 static const auto accumulater = reducer([](size_t acc, size_t x) { return acc + x; });
 
@@ -55,7 +64,7 @@ int main(int count, char** args)
 {
     std::vector<std::string> arguments(args, args + count);
 
-    a_perf_test<size_t> hashing_tests{
+    a_perf_test<size_t> hashing_test{
         "HashingFiltering",
         "Each test iterates through a lazily evaluated range of numbers, hashes them, filters out those"
         "divisible by 128, and sums them.",
@@ -87,37 +96,57 @@ int main(int count, char** args)
             }}
         }
     };
+
+    std::vector<perf_test> perf_tests;
+    perf_tests.emplace_back(std::move(hashing_test));
     
     using size_t_function = std::function<size_t(void)>;
 
+    auto printingTest = multitransducing(
+        mapping([](perf_test const & perfTest) {
+            std::stringstream stream;
+            stream << "Title: " << perfTest.title() << '\n';
+            return stream.str();
+        }),
+        mapping([](perf_test const & perfTest) {
+            std::stringstream stream;
+            stream << "Description: " << perfTest.description() << '\n';
+            return stream.str();
+        })
+    );
+
     output_to(
-        compose(
-            mapping([](a_perf_test<size_t> const & perfTest) {
-                return into_vector(perfTest.tests(),
-                    compose(
-                        mapping([](std::unique_ptr<virtual_test_function> const & testFunction) {
-                            return testFunction->time_function();
-                        }),
-                        mapping(DurationCaster<std::chrono::milliseconds>{})
-                    ));
-            }),
-            skipping(1),
-            taking(10),
-            mapping([](std::vector<std::chrono::milliseconds> const & my_durations) {
-                return output_to_string(
-                    compose(
-                        mapping([](std::chrono::milliseconds ms) {
-                            std::ostringstream stream;
-                            stream << ms.count() << " ms";
-                            return stream.str();
-                        }),
-                        interjecting(',')
-                    ), 
-                    my_durations);
-            }),
-            interjecting('\n')
-        ),
-    std::cout, repeats(&hashing_tests, (&hashing_tests)+1));
+        /*multitransducing(
+            printingTest,*/
+            compose(
+                mapping([](perf_test const & perfTest) {
+                    return into_vector(perfTest.tests(),
+                        compose(
+                            mapping([](auto const & testFunction) {
+                                return testFunction->time_function();
+                            }),
+                            duration_casting<std::chrono::milliseconds>()
+                        ));
+                }),
+                skipping(1),
+                taking(10),
+                mapping([](auto const & my_durations) {
+                    return output_to_string(
+                        compose(
+                            mapping([](std::chrono::milliseconds ms) {
+                                std::ostringstream stream;
+                                stream << ms.count() << " ms";
+                                return stream.str();
+                            }),
+                            interjecting(',')
+                        ), 
+                        my_durations);
+                }),
+                interjecting('\n')
+            )
+        //)
+        ,
+    std::cout, repeats(perf_tests.cbegin(), perf_tests.cend()));
 
     std::wcin.get();
 }

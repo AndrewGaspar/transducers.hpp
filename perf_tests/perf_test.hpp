@@ -5,6 +5,7 @@
 #include <vector>
 #include <functional>
 #include <chrono>
+#include <memory>
 
 #include <transducers\into.hpp>
 #include <transducers\mapping.hpp>
@@ -82,7 +83,7 @@ public:
     {
         for (auto & test : tests)
         {
-            m_tests.push_back(std::make_unique<test_function<_Out>>(test));
+            m_tests.push_back(std::unique_ptr<test_function<_Out>>(new test_function<_Out>{ test }));
         }
     }
 };

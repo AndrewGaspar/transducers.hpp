@@ -5,9 +5,7 @@
 #include "transducers/output.hpp"
 
 namespace transducers {
-
-
-    template<typename _Char = char, typename _Tr = nullptr_t, typename _Ra = nullptr_t>
+    template<typename _Char = char, typename _Tr = std::nullptr_t, typename _Ra = std::nullptr_t>
     auto output_to_string(_Tr&& transducer, _Ra&& input)
     {
         std::basic_stringstream<_Char> stream;

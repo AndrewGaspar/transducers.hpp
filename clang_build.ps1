@@ -1,1 +1,1 @@
-clang++ -static-libstdc++ -std=c++14 -I .\include test\mapping.cpp -o mapping.exe
+clang++ -O3 -static-libstdc++ -std=c++14 -I .\include perf_tests\main.cpp -o perf_tests.exe
