@@ -207,6 +207,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="include\transducers\beginning.hpp" />
+    <ClInclude Include="include\transducers\catting.hpp" />
     <ClInclude Include="include\transducers\helpers\tuple_helpers.hpp" />
     <ClInclude Include="include\transducers\inserting_after_each.hpp" />
     <ClInclude Include="include\transducers\atomic_escape_hatch.hpp" />
@@ -220,6 +221,7 @@
     <ClInclude Include="include\transducers\interleaving.hpp" />
     <ClInclude Include="include\transducers\into.hpp" />
     <ClInclude Include="include\transducers\into_vector.hpp" />
+    <ClInclude Include="include\transducers\mapcatting.hpp" />
     <ClInclude Include="include\transducers\multitransducing.hpp" />
     <ClInclude Include="include\transducers\reduction_wrapper.hpp" />
     <ClInclude Include="include\transducers\mapping.hpp" />
