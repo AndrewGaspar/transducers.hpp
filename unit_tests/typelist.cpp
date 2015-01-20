@@ -120,6 +120,17 @@ namespace unit_tests
         using also_just_string = transform_typelist_with_functor<transducers::typelist<bool, int, char, uint32_t, std::string>, stringifies>;
         static_assert(are_typelists_equivalent<also_just_string, transducers::typelist<std::string>>::value, "stringifies should return strings for all these types.");
 
+        using no_new_types = concat_typelist<float_int_bool, int_bool_float>;
+        static_assert(are_typelists_equivalent<no_new_types, float_int_bool>::value, "Concating float_int_bool and int_bool_float should produce a typelist with same types.");
+
+        using int8_tl = typelist<int8_t>;
+        using int16_tl = typelist<int16_t>;
+        using int32_tl = typelist<int32_t>;
+        using int64_tl = typelist<int64_t>;
+        using so_ints = typelist<int64_t, int32_t, int16_t, int8_t>;
+        using concat_ints = concat_typelist<int8_tl, int16_tl, int32_tl, int64_tl>;
+        static_assert(are_typelists_equivalent<concat_ints, so_ints>::value, "Concating the typelists as separate typelists should be the same as constructing typelist in place.");
+
         void Do()
         {
 

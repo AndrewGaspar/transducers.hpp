@@ -123,6 +123,26 @@ namespace transducers {
     {
     };
 
+    namespace details {
+        template<typename _tl1, typename _tl2, typename = void>
+        struct _concat_typelist : extend_typelist<_tl1, typename _tl2::head>{};
+
+        template<typename _tl1, typename _tl2>
+        struct _concat_typelist<_tl1, _tl2, typename std::enable_if<has_tail<_tl2>::value>::type> : _concat_typelist<extend_typelist<_tl1, typename _tl2::head>, typename _tl2::tail> {};
+    }
+
+    template<typename... _Tls>
+    struct concat_typelist;
+
+    template<typename _Tl>
+    struct concat_typelist<_Tl> : _Tl {};
+
+    template<typename _Tl1, typename _Tl2>
+    struct concat_typelist<_Tl1, _Tl2> : details::_concat_typelist<_Tl1, _Tl2> {};
+
+    template<typename _Tl, typename... _Rest>
+    struct concat_typelist<_Tl, _Rest...> : concat_typelist<_Tl, concat_typelist<_Rest...>>{};
+
     template<typename subset, typename superset, typename _v = bool>
     struct is_typelist_subset_of : std::false_type
     {

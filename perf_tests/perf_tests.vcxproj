@@ -123,6 +123,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="perf_test.hpp" />
+    <ClInclude Include="random_values.hpp" />
     <ClInclude Include="range.hpp" />
     <ClInclude Include="repeats.hpp" />
   </ItemGroup>

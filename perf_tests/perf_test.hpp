@@ -6,6 +6,7 @@
 #include <functional>
 #include <chrono>
 #include <memory>
+#include <stdexcept>
 
 #include <transducers\into.hpp>
 #include <transducers\mapping.hpp>
@@ -36,10 +37,15 @@ public:
     {
     }
 
+    _Out run_test() const
+    {
+        return m_test();
+    }
+
     virtual std::chrono::high_resolution_clock::duration time_function() const
     {
         auto start = std::chrono::high_resolution_clock::now();
-        auto result = m_test();
+        auto result = run_test();
         return std::chrono::high_resolution_clock::now() - start;
     }
 };
@@ -81,9 +87,20 @@ public:
         std::initializer_list<test_function<_Out>> tests) :
         perf_test(std::move(title), std::move(description))
     {
+        std::vector<_Out> results;
+
         for (auto & test : tests)
         {
+            results.emplace_back(test.run_test());
             m_tests.push_back(std::unique_ptr<test_function<_Out>>(new test_function<_Out>{ test }));
+        }
+
+        for (auto i : range<size_t>(0, results.size() - 1))
+        {
+            if (results[i] != results[i + 1])
+            {
+                throw std::logic_error("Each test function must return the same result.");
+            }
         }
     }
 };

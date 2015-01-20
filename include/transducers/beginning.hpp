@@ -18,19 +18,21 @@ namespace transducers {
             template<typename _Red, typename _Input>
             auto step(_Red r, _Input&& i)
             {
+                using brf = typename toolbox::template base_reducing_function<_Rf>;
+
                 if (!has_begun)
                 {
                     has_begun = true;
 
-                    auto reduction = m_rf.step(r, m_beginning);
+                    auto reduction = brf::m_rf.step(r, m_beginning);
                     if (transducers::is_reduced(reduction))
                     {
                         return reduction;
                     }
-                    return m_rf.step(reduction, std::forward<_Input>(i));
+                    return brf::m_rf.step(reduction, std::forward<_Input>(i));
                 }
 
-                return m_rf.step(r, std::forward<_Input>(i));
+                return brf::m_rf.step(r, std::forward<_Input>(i));
             }
         };
 

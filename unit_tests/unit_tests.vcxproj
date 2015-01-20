@@ -163,6 +163,7 @@
     <ClCompile Include="filtering.cpp" />
     <ClCompile Include="inserting_after_each.cpp" />
     <ClCompile Include="interjecting.cpp" />
+    <ClCompile Include="interleaving.cpp" />
     <ClCompile Include="into.cpp" />
     <ClCompile Include="into_it.cpp" />
     <ClCompile Include="multitransducing.cpp" />

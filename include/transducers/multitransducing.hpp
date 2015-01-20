@@ -207,7 +207,14 @@ namespace transducers {
             {
                 return apply_reducer(reducer, std::get<_Is>(m_transducers)...);
             }
+
+            template<typename _InList, typename _Tr>
+            using _output_tl = typename std::decay<_Tr>::type::template output_typelist<_InList>;
+
         public:
+            template<typename _InTyList>
+            using output_typelist = concat_typelist<_output_tl<_InTyList, Ts>...>;
+
             template<typename... _Ts>
             MultiTransducer(_Ts&&... transducers) :
                 m_transducers(std::forward<_Ts>(transducers)...)

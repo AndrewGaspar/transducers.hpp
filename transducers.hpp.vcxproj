@@ -217,6 +217,7 @@
     <ClInclude Include="include\transducers\filtering.hpp" />
     <ClInclude Include="include\transducers\ending.hpp" />
     <ClInclude Include="include\transducers\interjecting.hpp" />
+    <ClInclude Include="include\transducers\interleaving.hpp" />
     <ClInclude Include="include\transducers\into.hpp" />
     <ClInclude Include="include\transducers\into_vector.hpp" />
     <ClInclude Include="include\transducers\multitransducing.hpp" />
