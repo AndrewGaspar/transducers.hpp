@@ -25,43 +25,13 @@
 #include <transducers\sorting.hpp>
 #include <transducers\inserting_after_each.hpp>
 #include <transducers\beginning.hpp>
+#include <transducers\mapcatting.hpp>
 
 #include "range.hpp"
 #include "repeats.hpp"
 #include "perf_test.hpp"
 
 using namespace transducers;
-
-class Timer
-{
-public:
-    template<typename Fun>
-    auto operator()(Fun const & f) const
-    {
-        auto start = std::chrono::high_resolution_clock::now();
-        f();
-        return std::chrono::high_resolution_clock::now() - start;
-    }
-};
-
-template<typename dur>
-class DurationCaster
-{
-public:
-    template<typename From>
-    dur operator()(From input) const
-    {
-        return std::chrono::duration_cast<dur>(input);
-    }
-};
-
-template<typename duration>
-auto duration_casting()
-{
-    return mapping([](auto const & from) {
-        return std::chrono::duration_cast<duration>(from);
-    });
-}
 
 static const auto hashing = mapping(std::hash<uint32_t>());
 static const auto accumulater = reducer([](size_t acc, size_t x) { return acc + x; });
@@ -118,36 +88,37 @@ static auto const printingResultsHeader = compose(
 
 static auto const computingAndPrintingTestResults = compose(
     repeating(10),
-    mapping([](perf_test const & perfTest) {
-        return output_to_string(
-            compose(
-                mapping([](std::unique_ptr<virtual_test_function> const & testFunction) {
-                    auto time = testFunction->time_function();
-                    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(time);
+    multitransducing(
+        mapping([](auto const & perfTest) { return "| "; }),
+        compose(
+            mapcatting([](perf_test const & perfTest) -> decltype(auto) {
+                return perfTest.tests();
+            }),
+            mapping([](std::unique_ptr<virtual_test_function> const & testFunction) {
+                auto time = testFunction->time_function();
+                auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(time);
 
-                    std::ostringstream stream;
-                    stream << ms.count() << " ms";
-                    auto str = stream.str();
-                    auto const & title = testFunction->title();
+                std::ostringstream stream;
+                stream << ms.count() << " ms";
+                auto str = stream.str();
+                auto const & title = testFunction->title();
 
-                    if (str.size() >= title.size())
-                    {
-                        return str;
-                    }
+                if (str.size() >= title.size())
+                {
+                    return str;
+                }
 
-                    auto spaces = title.size() - str.size();
+                auto spaces = title.size() - str.size();
 
-                    std::string result(spaces, ' ');
-                    result += str;
+                std::string result(spaces, ' ');
+                result += str;
 
-                    return result;
-                }),
-                addingMdTableBorders
-            ),
-            perfTest.tests()
-        );
-    }),
-    addingNewLines
+                return result;
+            }),
+            inserting_after_each(" | ")
+        ),
+        mapping([](auto const &) { return '\n'; })
+    )
 );
 
 int main(int count, char** args)

@@ -16,7 +16,7 @@ namespace transducers {
             template<typename _Red, typename _In>
             auto step(_Red&& r, _In&& input)
             {
-                using result_t = typename brf::template result_type<_Red, _In>;
+                using result_t = typename brf::template result_type<_Red, decltype(*std::declval<_In>().begin())>;
 
                 result_t reduction = std::forward<_Red>(r);
 
@@ -40,7 +40,7 @@ namespace transducers {
             {
             public:
                 template<typename _In>
-                auto operator()(_In&& input)
+                auto operator()(_In&& input) const
                 {
                     return *input.begin();
                 }
